@@ -43,7 +43,7 @@ function getSetting(setting) {
      if (rs.rows.length > 0) {
           res = rs.rows.item(0).value;
      } else {
-         res = "Unknown"
+         res = "un"
      }
   })
   // The function returns “Unknown” if the setting was not found in the database

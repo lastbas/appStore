@@ -4,7 +4,7 @@ import com.nokia.extras 1.1
 
 
 Page {
-    id: window
+    id: windowP
     function xmlErrorF() { retryButton.visible=true; errorText.visible=true;  model.source=""; xmlLoaded=false; xmlError=true}
     function retry() { retryButton.visible=false; errorText.visible=false;  model.source="http://storeage.eu.pn/data.xml"; xmlError=false }
     function updateViewContentHeight() { rosterView.contentHeight=(repeater.count*itemHeight)+headerheight; }
@@ -123,7 +123,7 @@ Page {
             Button {
                 y: 10
                 id:backBnt
-                enabled:(downloading) ? false : true
+                enabled:(downloading) ? false : (installing) ? false : true
                 anchors { right: parent.right; rightMargin: 10 }
                 visible:false
                 text: "Back"
@@ -133,21 +133,22 @@ Page {
                     if(finished) {
                     finished=false;
                     dlhelper.delFile(sis);
-
                     }
                 }
             }
-            ToolButton {
+            Button {
                 id:dButton
-                width: 135
-                height: 51
-                //enabled: (downloading) ? false : true
+                anchors { horizontalCenter: backBnt.horizontalCenter; horizontalCenterOffset: (downloading) ? 0 : -25; top:backBnt.bottom; topMargin: 10 }
                 visible:false
-                text:(!finished) ? (!downloading) ? "Download" : "Cancel" : "Install"
+                height: (installing) ? 0 : 40
+                width:(finished) ? 120 : (downloading) ? 44 : 120
+                text:(!finished) ? (!downloading) ? "Download" : "" : "Install"
+                iconSource: (downloading) ? "ui/x-marked.svg" : ""
                 platformInverted: invertedTheme
                 onClicked:{
-                    if(text=="Cancel") {
+                    if(text=="") {
                         dlhelper.cancelDownload();
+                        busyind.value=0
                     }
                     if(!downloading) {
                         if(!finished) {
@@ -160,30 +161,44 @@ Page {
                                 dlhelper.download();
                             }
                         } else {
+                            if(insMethod==1){
+                                core.sisInstallGUI(sis);
+                            }
+                            else {
+                                dlhelper.installDownload(sis);
+                                installing=true
+                            }
 
-                            core.sisInstallGUI(sis);  // this way is better
-                            //dlhelper.installDownload(sis) than this
                             finished=false
                         }
                     }
                 }
-
-                anchors {
-                    top:backBnt.bottom; topMargin: 5
-                    right: parent.right; rightMargin: 10
+                Text {
+                    text: (installing) ? "Installing..." : ""
+                    color:"#737373"
+                    anchors { horizontalCenter: dButton.horizontalCenter; verticalCenter: dButton.verticalCenter; verticalCenterOffset: 20 }
                 }
-
-                BusyIndicator {
+                ProgressBar {
                     id:busyind
-
-                    anchors {
-                        right: parent.left
-                        verticalCenter: parent.verticalCenter
-                    }
-                    running: (downloading) ? true : false
+                    anchors {right: parent.left; rightMargin: 10; verticalCenter: parent.verticalCenter }
+                    minimumValue: 0
+                    maximumValue: 100
+                    platformInverted: invertedTheme
+                    width:110
+                    value:(!downloading) ? 0 : dlhelper.getProgress();
                     visible: (downloading) ? true : false
                 }
-
+                Timer {
+                    running: (downloading) ? true : false
+                    repeat: true
+                    interval: 1200
+                    onTriggered: {
+                        busyind.value = dlhelper.getProgress();
+                    }
+                    onRunningChanged: {
+                        busyind.value = 0
+                    }
+                }
             }
 
             Row {
@@ -205,10 +220,11 @@ Page {
                     id:appName
                     text: title
                     font.pointSize: 7.5;
-                    anchors { verticalCenter: appIcon.verticalCenter; verticalCenterOffset: -10 }
+                    anchors { verticalCenter: appIcon.verticalCenter; verticalCenterOffset: (recipe.state=='Details') ? 0 : -10 }
                     color: (invertedTheme) ? "black" : "white"
                     Text {
                         id:category
+                        visible: (recipe.state=='Details') ? false : true
                         text: cat
                         font.pointSize: 6;
                         color:"#737373"
@@ -273,7 +289,7 @@ Page {
                 State {
                 name: "Details"
                 PropertyChanges { target: recipe; enabled: false }
-                PropertyChanges { target: recipe; height: window.height }
+                PropertyChanges { target: recipe; height: windowP.height }
                 PropertyChanges { target: rosterView; explicit: true; contentY: recipe.y+header.height }
                 PropertyChanges { target: details; opacity: 1; x: 0 }
                 PropertyChanges { target: rosterView; interactive: false }
@@ -283,11 +299,15 @@ Page {
                 PropertyChanges { target: detailFlick; interactive:true;opacity: 1 }
 
             }
+
             ]
             transitions: Transition {
                 ParallelAnimation {
                     NumberAnimation { duration: 200; properties: "height,contentY,opacity" }
                 }
+            }
+            Component.onCompleted: {
+                recipe.state=''
             }
         }
     }
@@ -302,6 +322,7 @@ Page {
         }
         onTam: {
             infobanner.open();
+            installing=false
         }
         onCancelled:
         {
