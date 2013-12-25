@@ -11,7 +11,15 @@ Page {
             flat: true
             iconSource: "toolbar-back"
             platformInverted: window.platformInverted
-            onClicked: window.pageStack.depth <= 1 ? Qt.quit() : window.pageStack.pop()
+            onClicked: {
+                if(window.pageStack.depth <= 1) {
+                    Qt.quit();
+                } else {
+                    categoriesView=false
+                    window.pageStack.pop();
+
+                }
+            }
         }
     }
     BusyIndicator {

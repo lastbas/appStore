@@ -84,7 +84,6 @@ PageStackWindow {
                        }
                 } else {
                     cateFilter=""
-                    core.setCatFilterName("")
                 }
             }
         }
@@ -93,7 +92,12 @@ PageStackWindow {
             enabled: (downloading) ? false : (installing) ? false : true
             platformInverted: invertedTheme
             iconSource: "toolbar-list"
-            onClicked: window.pageStack.push(Qt.createComponent("CategoriesPage.qml"))
+            onClicked: {
+                categoriesView=true
+                window.pageStack.push(Qt.createComponent("CategoriesPage.qml"))
+
+            }
+
 
         }
         ToolButton {

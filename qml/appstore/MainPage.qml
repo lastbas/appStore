@@ -14,7 +14,7 @@ Page {
         anchors { fill: parent; }
         contentWidth: columnContent.width
         clip:true
-        contentHeight:(searching) ? (searchString=="") ? 0 : (appCount*itemHeight)+headerheight :  (appCount*itemHeight)+headerheight
+        contentHeight:(searching) ? (searchString=="") ? 0 : (appCount*itemHeight)+headerheight : (cateFilter=="") ? (repeater.count*itemHeight)+headerheight : (appCount*itemHeight)+headerheight
         boundsBehavior: Flickable.StopAtBounds
         flickableDirection: Flickable.VerticalFlick
         Rectangle {
@@ -70,6 +70,8 @@ Page {
                 searchString=text
             }
             onHeightChanged: {
+                searchString=""
+                text=""
                 if(height>0) {
                 text=""
                 openSoftwareInputPanel();
@@ -103,7 +105,7 @@ Page {
             visible: {
                 if(searching==true) {
                     var patt = searchString.toLowerCase()
-                    if(patt.indexOf(title.toLowerCase()))
+                    if(patt.toLowerCase().indexOf(title.toLowerCase()))
                     {
                         return false;
 
@@ -111,13 +113,30 @@ Page {
                     else
                     {
                         return true;
-
                     }
                 } else {
                     return (!cateFilter=="") ? (cat==cateFilter) ? true : false : true;
                 }
             }
-            onVisibleChanged: (visible==true) ?  appCount++ : appCount--;
+            onVisibleChanged: {
+                console.log("visible changed")
+                if(recipe.height==itemHeight)  {
+                    if(visible==true) {
+                        appCount++
+                    }
+                    else
+                    {
+                        appCount--
+                    }
+                }
+                if(categoriesView) {
+                    rosterView.contentY = 0
+                    recipe.height = itemHeight
+                    recipe.state = '';
+                }
+            }
+
+
             Component.onCompleted: appCount=repeater.count
             platformInverted: invertedTheme
             onClicked: {
