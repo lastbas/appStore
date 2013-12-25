@@ -3,18 +3,9 @@
 core::core(QObject *parent) :
     QObject(parent)
 {
+
 }
 
-void core::setCatFilterName(const QString &name) {
-    catFilterName=name;
-    qDebug()<<catFilterName;
-    categorieChanged(); //signal
-}
-
-
-QString core::getCatFilterName() {
-    return catFilterName;
-}
 
 void core::sisInstallGUI(const QString &sisname) {
     RApaLsSession apaLsSession;
@@ -26,4 +17,15 @@ void core::sisInstallGUI(const QString &sisname) {
     TPtrC16 symbianpath(reinterpret_cast<const TUint16*>(path.utf16()));
     apaLsSession.StartDocument(symbianpath, threadId);
     CleanupStack::PopAndDestroy(&apaLsSession );
+}
+
+void core::compareString(const QString &str, const QString &str2) {
+    qDebug()<<str;
+    if(QString::compare(str, str2, Qt::CaseInsensitive)== 0) {
+        return false;
+        qDebug("false");
+    } else {
+        return true;
+        qDebug("true");
+    }
 }

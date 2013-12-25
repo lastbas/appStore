@@ -14,7 +14,7 @@ Page {
         anchors { fill: parent; }
         contentWidth: columnContent.width
         clip:true
-        contentHeight:(repeater.count*itemHeight)+headerheight
+        contentHeight:(searching) ? (searchString=="") ? 0 : (appCount*itemHeight)+headerheight :  (appCount*itemHeight)+headerheight
         boundsBehavior: Flickable.StopAtBounds
         flickableDirection: Flickable.VerticalFlick
         Rectangle {
@@ -52,7 +52,8 @@ Page {
                     Text {
                         id:headerText
                         anchors { horizontalCenter: parent.horizontalCenter; verticalCenter: parent.verticalCenter; }
-                        text: "Store"; font.pointSize: 9;
+                        text: (cateFilter=="") ? (!searching) ? "Store" : (searchString=="") ? "Search" : "Search - "+searchString : cateFilter
+                        font.pointSize: 9;
                         color: (invertedTheme) ? "black" : "white"
                     }
                 }
@@ -68,6 +69,12 @@ Page {
             onTextChanged: {
                 searchString=text
             }
+            onHeightChanged: {
+                if(height>0) {
+                text=""
+                openSoftwareInputPanel();
+                }
+            }
         }
 //------------------------ALL-APP-LIST--------------------------------//
         Column {
@@ -78,6 +85,7 @@ Page {
                     id:repeater
                     delegate: recipeDelegate
                     model:model
+
                 }
             }
 
@@ -89,16 +97,13 @@ Page {
 
         ListItem {
             id: recipe
-            height: itemHeight
-            /*onVisibleChanged: {
-                console.log("visibility changed")
-                updateViewContentHeight();
-            }*/
+            height:itemHeight
+
 
             visible: {
                 if(searching==true) {
                     var patt = searchString.toLowerCase()
-                    if(patt.toLowerCase().indexOf(title.toLowerCase()))
+                    if(patt.indexOf(title.toLowerCase()))
                     {
                         return false;
 
@@ -106,11 +111,14 @@ Page {
                     else
                     {
                         return true;
+
                     }
                 } else {
                     return (!cateFilter=="") ? (cat==cateFilter) ? true : false : true;
                 }
             }
+            onVisibleChanged: (visible==true) ?  appCount++ : appCount--;
+            Component.onCompleted: appCount=repeater.count
             platformInverted: invertedTheme
             onClicked: {
                 recipe.state = 'Details';
@@ -152,6 +160,7 @@ Page {
                     }
                     if(!downloading) {
                         if(!finished) {
+
                         downloading=true
                             if(!link){
                                 dlhelper.setTarget(sis);
@@ -255,7 +264,7 @@ Page {
             }
             Flickable {
                 id:detailFlick
-                contentHeight: infoText.height+screenShot.height
+                contentHeight: infoText.height+screenShot.height+50
                 clip: true
                 opacity:0
                 interactive: false
@@ -306,9 +315,7 @@ Page {
                     NumberAnimation { duration: 200; properties: "height,contentY,opacity" }
                 }
             }
-            Component.onCompleted: {
-                recipe.state=''
-            }
+
         }
     }
 //---------------------END-DELEGATE--------------------------//

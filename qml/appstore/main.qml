@@ -1,13 +1,13 @@
 import QtQuick 1.1
 import com.nokia.symbian 1.1
 import "storage.js" as Storage
-import "drive.js" as Driver
+
 
 PageStackWindow {
     id: window
     initialPage: MainPage { tools: toolBarLayout}
     showStatusBar: true
-    showToolBar: (xmlLoaded) ? (downloading) ? false : (installing) ? false : true : false
+    showToolBar: xmlLoaded
     platformInverted: invertedTheme
     property int insMethod:null
     property bool invertedTheme: null
@@ -33,11 +33,13 @@ PageStackWindow {
             console.log("Default Settings loaded")
         }
         dlhelper.path(driveSaved)
+
     }
     property bool downloading: false
     property bool finished: false
     property bool cancel: false
 
+    property int appCount: 0
     property int headerheight: 70
     property int itemHeight: 80
     property bool xmlLoaded: false
@@ -67,10 +69,12 @@ PageStackWindow {
     ToolBarLayout {
         id: toolBarLayout
 
+        opacity: (downloading) ? 0.3 : (installing) ? 0.3 : 1.0
         ToolButton {
             flat: true
             platformInverted: invertedTheme
             iconSource: "toolbar-back"
+            enabled: (downloading) ? false : (installing) ? false : true
             onClicked: {
                 if(cateFilter=="") {
                 if(window.pageStack.depth <= 1)  {
@@ -86,13 +90,15 @@ PageStackWindow {
         }
         ToolButton {
             flat: true
+            enabled: (downloading) ? false : (installing) ? false : true
             platformInverted: invertedTheme
             iconSource: "toolbar-list"
-            onClicked: window.pageStack.push(Qt.createComponent("CategoriesPage.qml"),{invTheme:window.invertedTheme})
+            onClicked: window.pageStack.push(Qt.createComponent("CategoriesPage.qml"))
 
         }
         ToolButton {
             flat: true
+            enabled: (downloading) ? false : (installing) ? false : true
             platformInverted: invertedTheme
             iconSource: "toolbar-search"
             onClicked: {
@@ -111,6 +117,7 @@ PageStackWindow {
         }
         ToolButton {
             flat: true
+            enabled: (downloading) ? false : (installing) ? false : true
             platformInverted: invertedTheme
             iconSource:(invertedTheme) ? "ui/settings-inv.svg" : "ui/settings.svg"
             onClicked: window.pageStack.push(Qt.resolvedUrl("ConfigPage.qml"))

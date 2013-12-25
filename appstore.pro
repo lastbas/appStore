@@ -28,9 +28,11 @@ QT += network
 CONFIG += qt-components
 
 # The .cpp file which was generated for your project. Feel free to hack it.
-HEADERS += src/qtdownload.h src/fim.h src/download.h src/core.h
+HEADERS += src/qtdownload.h src/fim.h src/download.h src/core.h \
+    src/HttpReq.h
 
-SOURCES += main.cpp src/qtdownload.cpp src/fim.cpp src/download.cpp src/core.cpp
+SOURCES += main.cpp src/qtdownload.cpp src/fim.cpp src/download.cpp src/core.cpp \
+    src/HttpReq.cpp
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)

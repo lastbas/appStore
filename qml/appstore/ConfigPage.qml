@@ -3,6 +3,7 @@ import com.nokia.symbian 1.1
 import "storage.js" as Storage
 
 Page {
+    id:configPage
     tools:
         ToolBarLayout {
         ToolButton {
@@ -16,6 +17,8 @@ Page {
                        }
         }
     }
+
+
     Column {
         id:column
         anchors.fill: parent
@@ -53,6 +56,7 @@ Page {
         ListItem {
             id:installMethod
             platformInverted: invertedTheme
+
             ListItemText {
                 text:"Install Method:"
                 id:txt
@@ -62,6 +66,7 @@ Page {
                     verticalCenter: parent.verticalCenter
                 }
             }
+
             onClicked: {
                 if(window.insMethod==0) {
                     window.insMethod = 1
@@ -83,9 +88,11 @@ Page {
         ListItem {
             id:drive
             enabled: (window.insMethod==0) ? true : false
+            opacity: (window.insMethod==0) ? 1 : 0.3
 
             platformInverted: invertedTheme
             onClicked: {
+                selectionDialog.model = listmodel
                 selectionDialog.open();
             }
             ListItemText {
@@ -105,21 +112,22 @@ Page {
 
 
                 text: selectionDialog.selectedIndex >= 0
-                                              ? selectionDialog.model.get(selectionDialog.selectedIndex).name
+                                              ? listmodel.get(selectionDialog.selectedIndex).name
                                               : "Please select"
                 }
 
+            ListModel {
+                id:listmodel
+                ListElement { name: "(C)Phone Memory" }
+                ListElement { name: "(E)Mass Memory" }
+                ListElement { name: "(F)Memory Card" }
+            }
 
                 SelectionDialog {
                     id: selectionDialog
                     titleText: "Select:"
                     platformInverted: window.platformInverted
-                    model: ListModel {
-                        ListElement { name: "(C)Phone Memory" }
-                        ListElement { name: "(E)Mass Memory" }
-                        ListElement { name: "(F)Memory Card" }
-
-                    }
+                    //model:
                     onSelectedIndexChanged: {
                         if(selectedIndex==0) {
                             Storage.setSetting("insDrive","C")
@@ -141,6 +149,7 @@ Page {
             }
         }
     Component.onCompleted: {
+        //
         selectionDialog.selectedIndex = (window.driveSaved=="C") ? 0 : (window.driveSaved=="E") ? 1 : 2
     }
 }

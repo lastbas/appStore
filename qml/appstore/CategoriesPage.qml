@@ -14,8 +14,14 @@ Page {
             onClicked: window.pageStack.depth <= 1 ? Qt.quit() : window.pageStack.pop()
         }
     }
-    property bool invTheme: null
-
+    BusyIndicator {
+        anchors { verticalCenter: parent.verticalCenter; horizontalCenter:parent.horizontalCenter; }
+        height:50
+        width:50
+        running: (model.progress<1.0) ? true : false
+        visible: (model.progress<1.0) ? true : false
+        platformInverted: window.invertedTheme
+    }
 
 Column {
     ListHeading {
@@ -26,14 +32,13 @@ Column {
     }
     Repeater {
         id:rep
-
         delegate: categoriesDel
         model: XmlListModel {
             id: model
             source:"http://storeage.eu.pn/categories.xml"
             query: "/catalogue/book"
             XmlRole { name: "name"; query: "name/string()" }
-            XmlRole { name: "picture"; query: "picture/string()"}
+            XmlRole { name: "img"; query: "img/string()"}
        }
 
     }
@@ -42,16 +47,22 @@ Column {
         id:categoriesDel
         ListItem {
            height: 60
-           platformInverted: invTheme
+
+           platformInverted: window.invertedTheme
            onClicked: {
                page.pageStack.pop()
-               core.setCatFilterName(name)
+               window.cateFilter = name
+           }
+           Image {
+           source: img
+           x:10
+           anchors { verticalCenter: parent.verticalCenter;  }
            }
                Text {
                    id:catext
                    text: name
-                   color: (invTheme == true) ? "black" : "white"
-                   x:60
+                   color: (window.invertedTheme) ? "black" : "white"
+                   x:80
                    font.pointSize: 7.5;
                    anchors { verticalCenter: parent.verticalCenter;  }
                }

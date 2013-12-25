@@ -1,3 +1,5 @@
+#ifndef QTDOWNLOAD_H
+#define QTDOWNLOAD_H
 #include <QObject>
 #include <QString>
 #include <QtNetwork/QNetworkAccessManager>
@@ -44,3 +46,5 @@ public slots:
     void empty();
     void downComp();
 };
+
+#endif //QTDOWNLOAD_H
