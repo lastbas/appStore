@@ -84,6 +84,7 @@ PageStackWindow {
                        }
                 } else {
                     cateFilter=""
+                    categoriesView=false
                 }
             }
         }

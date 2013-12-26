@@ -14,7 +14,8 @@ Page {
         anchors { fill: parent; }
         contentWidth: columnContent.width
         clip:true
-        contentHeight:(searching) ? (searchString=="") ? 0 : (appCount*itemHeight)+headerheight : (cateFilter=="") ? (repeater.count*itemHeight)+headerheight : (appCount*itemHeight)+headerheight
+        //contentHeight:(searching) ? (searchString=="") ? 0 : (appCount*itemHeight)+headerheight : (cateFilter=="") ? (repeater.count*itemHeight)+headerheight : (appCount*itemHeight)+headerheight
+        contentHeight: (searching && cateFilter) ? (appCount*itemHeight)+headerheight : (repeater.count*itemHeight)+headerheight
         boundsBehavior: Flickable.StopAtBounds
         flickableDirection: Flickable.VerticalFlick
         Rectangle {
@@ -119,7 +120,6 @@ Page {
                 }
             }
             onVisibleChanged: {
-                console.log("visible changed")
                 if(recipe.height==itemHeight)  {
                     if(visible==true) {
                         appCount++
@@ -131,7 +131,6 @@ Page {
                 }
                 if(categoriesView) {
                     rosterView.contentY = 0
-                    recipe.height = itemHeight
                     recipe.state = '';
                 }
             }
@@ -140,32 +139,17 @@ Page {
             Component.onCompleted: appCount=repeater.count
             platformInverted: invertedTheme
             onClicked: {
-                recipe.state = 'Details';
-                searching=false
+                /*recipe.state = 'Details';
+                searching=false*/
+                windowP.pageStack.push(Qt.createComponent("DetailsView.qml"))
             }
             Item {
                 id: background
                 x: 2; y: 2; width: parent.width - x*2; height: parent.height - y*2
             }
-            Button {
-                y: 10
-                id:backBnt
-                enabled:(downloading) ? false : (installing) ? false : true
-                anchors { right: parent.right; rightMargin: 10 }
-                visible:false
-                text: "Back"
-                platformInverted: invertedTheme
-                onClicked: {
-                    recipe.state = '';
-                    if(finished) {
-                    finished=false;
-                    dlhelper.delFile(sis);
-                    }
-                }
-            }
-            Button {
+            /*Button {
                 id:dButton
-                anchors { horizontalCenter: backBnt.horizontalCenter; horizontalCenterOffset: (downloading) ? 0 : -25; top:backBnt.bottom; topMargin: 10 }
+                //anchors { horizontalCenter: backBnt.horizontalCenter; horizontalCenterOffset: (downloading) ? 0 : -25; top:backBnt.bottom; topMargin: 10 }
                 visible:false
                 height: (installing) ? 0 : 40
                 width:(finished) ? 120 : (downloading) ? 44 : 120
@@ -202,7 +186,7 @@ Page {
                     }
                 }
                 Text {
-                    text: (installing) ? "Installing..." : ""
+                    text:(installing) ? "Installing..." : ""
                     color:"#737373"
                     anchors { horizontalCenter: dButton.horizontalCenter; verticalCenter: dButton.verticalCenter; verticalCenterOffset: 20 }
                 }
@@ -228,7 +212,7 @@ Page {
                     }
                 }
             }
-
+*/
             Row {
                 id: topLayout
                 x: 10; y: 15;  height: appIcon.height; width: parent.width;
@@ -261,7 +245,7 @@ Page {
                 }
 
             }
-            Column {
+           /* Column {
                 spacing: 0
                 id: details
                 width: parent.width - 20
@@ -280,8 +264,8 @@ Page {
                      color:"#737373"
                 }
 
-            }
-            Flickable {
+            }*/
+           /* Flickable {
                 id:detailFlick
                 contentHeight: infoText.height+screenShot.height+50
                 clip: true
@@ -327,18 +311,14 @@ Page {
                 PropertyChanges { target: backBnt; visible:true }
                 PropertyChanges { target: detailFlick; interactive:true;opacity: 1 }
                 PropertyChanges { target: screenShot; source:screenshot }
-
             }
-
-            ]
+           ]
            transitions: [ Transition {
                 ParallelAnimation {
                     NumberAnimation { duration: 200; properties: "height,contentY,opacity" }
                 }
-
-            }
-           ]
-
+              }
+           ]*/
         }
     }
 //---------------------END-DELEGATE--------------------------//
@@ -421,7 +401,6 @@ Page {
          XmlRole { name: "dtltext"; query: "dtltext/string()"}
          XmlRole { name: "dev"; query: "dev/string()" }
          XmlRole { name: "cat"; query: "cat/string()" }
-         XmlRole { name: "more"; query: "more/string()" }
          onStatusChanged: {
              switch (status) {
              case XmlListModel.Error:  xmlErrorF();
