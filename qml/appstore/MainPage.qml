@@ -204,7 +204,6 @@ Page {
                 Text {
                     text: (installing) ? "Installing..." : ""
                     color:"#737373"
-
                     anchors { horizontalCenter: dButton.horizontalCenter; verticalCenter: dButton.verticalCenter; verticalCenterOffset: 20 }
                 }
                 ProgressBar {
@@ -301,7 +300,6 @@ Page {
                     }
                     Image {
                         id:screenShot
-                        source:screenshot
                         visible:(screenshot) ? true : false
                         height:(screenshot) ? 600 : 0
                         width:330
@@ -310,6 +308,8 @@ Page {
                             anchors.centerIn: parent
                             visible:screenShot.progress<1.0
                             running:screenShot.progress<1.0
+                            width:60
+                            height:60
                         }
                     }
                 }
@@ -325,17 +325,19 @@ Page {
                 PropertyChanges { target: rosterView; interactive: false }
                 PropertyChanges { target: dButton; visible:true }
                 PropertyChanges { target: backBnt; visible:true }
-                //PropertyChanges { target: buttonRow; opacity: 1 }  //this doesn't slow down the interface
                 PropertyChanges { target: detailFlick; interactive:true;opacity: 1 }
+                PropertyChanges { target: screenShot; source:screenshot }
 
             }
 
             ]
-            transitions: Transition {
+           transitions: [ Transition {
                 ParallelAnimation {
                     NumberAnimation { duration: 200; properties: "height,contentY,opacity" }
                 }
+
             }
+           ]
 
         }
     }
