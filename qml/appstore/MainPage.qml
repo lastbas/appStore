@@ -204,6 +204,7 @@ Page {
                 Text {
                     text: (installing) ? "Installing..." : ""
                     color:"#737373"
+
                     anchors { horizontalCenter: dButton.horizontalCenter; verticalCenter: dButton.verticalCenter; verticalCenterOffset: 20 }
                 }
                 ProgressBar {
@@ -296,6 +297,7 @@ Page {
                         wrapMode: Text.Wrap
                         width:330
                         color: (invertedTheme) ? "black" : "white"
+                        textFormat: Text.RichText;
                     }
                     Image {
                         id:screenShot

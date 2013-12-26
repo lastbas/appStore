@@ -9,6 +9,7 @@ enum State{
 class Download : public QObject
 {
     Q_OBJECT
+
 public:
     explicit Download(QObject *parent = 0);
     ~Download();

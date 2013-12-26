@@ -19,6 +19,7 @@
 
 #include <qplatformdefs.h> // MEEGO_EDITION_HARMATTAN
 
+
 #ifdef HARMATTAN_BOOSTER
 #include <MDeclarativeCache>
 #endif
@@ -78,7 +79,7 @@ QmlApplicationViewer::QmlApplicationViewer(QWidget *parent)
 {
     connect(engine(), SIGNAL(quit()), SLOT(close()));
     setResizeMode(QDeclarativeView::SizeRootObjectToView);
-    // Qt versions prior to 4.8.0 don't have QML/JS debugging services built in
+    // Qt versions prior to 4.8 don't have QML/JS debugging services built in
 #if defined(QMLJSDEBUGGER) && QT_VERSION < 0x040800
 #if !defined(NO_JSDEBUGGER)
     new QmlJSDebugger::JSDebuggerAgent(engine());

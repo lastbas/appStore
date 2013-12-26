@@ -13,6 +13,7 @@
 
 #include <QtDeclarative/QDeclarativeView>
 
+
 class QmlApplicationViewer : public QDeclarativeView
 {
     Q_OBJECT
