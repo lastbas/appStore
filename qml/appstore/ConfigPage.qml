@@ -48,7 +48,7 @@ Page {
                 }
             }
             Text {
-                anchors { horizontalCenter: parent.horizontalCenter; horizontalCenterOffset: 90; verticalCenter: parent.verticalCenter;}
+                anchors { right:parent.right; rightMargin: 20;  verticalCenter: parent.verticalCenter;}
                 text: (invertedTheme) ? "Radiance" : "Evolve"
                 color: (invertedTheme) ? "grey" : "#737373"
             }
@@ -79,7 +79,7 @@ Page {
 
             Text {
                     id: item
-                    anchors { horizontalCenter: parent.horizontalCenter; horizontalCenterOffset: 90; verticalCenter: parent.verticalCenter;}
+                    anchors { right:parent.right; rightMargin: 20; verticalCenter: parent.verticalCenter;}
                     text:(window.insMethod==0) ? "Silent" : "Normal"
                     color: (invertedTheme) ? "grey" : "#737373"
                 }
@@ -108,7 +108,7 @@ Page {
             Text {
                 id:driveSel
                 color: (invertedTheme) ? "grey" : "#737373"
-                anchors { horizontalCenter: parent.horizontalCenter; horizontalCenterOffset: 90; verticalCenter: parent.verticalCenter;}
+                anchors { right:parent.right; rightMargin: 20; verticalCenter: parent.verticalCenter;}
 
 
                 text: selectionDialog.selectedIndex >= 0

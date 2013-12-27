@@ -20,6 +20,7 @@ signals:
     void progress(int pro);
     void satatechan(State stat);
     void cda();
+    Q_INVOKABLE void error();
     void downComp();
 private slots:
     void com();

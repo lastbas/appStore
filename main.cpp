@@ -17,11 +17,12 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     QmlApplicationViewer viewer;
     viewer.setAttribute(Qt::WA_OpaquePaintEvent);
     viewer.setAttribute(Qt::WA_NoSystemBackground);
+    viewer.setProperty("orientationMethod", 1);
     //viewer.setAttribute(Qt::WA_LockPortraitOrientation);
     QtDownload dl;
     viewer.rootContext()->setContextProperty("dlhelper",&dl);
     Download pHas;
-    viewer.rootContext()->setContextProperty("dllS",&pHas);
+    viewer.rootContext()->setContextProperty("dll",&pHas);
     core f;
     viewer.rootContext()->setContextProperty("core",&f);
 

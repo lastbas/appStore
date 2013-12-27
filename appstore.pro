@@ -20,6 +20,14 @@ TARGET.UID3 = 0xE6002CD5
 gccOption = "OPTION gcce -fpermissive"
 MMP_RULES += gccOption
 MMP_RULES += "OPTION gcce -march=armv6 -mfpu=vfp -mfloat-abi=softfp -marm"
+
+    my_deployment.pkg_prerules += vendorinfo
+
+    DEPLOYMENT += my_deployment
+
+    DEPLOYMENT.display_name += Store
+
+    vendorinfo += "%{\"\"}" ":\"\""
 }
 # Speed up launching on MeeGo/Harmattan when using applauncherd daemon
 # CONFIG += qdeclarative-boostable

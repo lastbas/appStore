@@ -5,9 +5,9 @@ import "storage.js" as Storage
 
 PageStackWindow {
     id: window
-    initialPage: MainPage { tools: toolBarLayout}
+    initialPage: MainPage { }
     showStatusBar: true
-    showToolBar: xmlLoaded
+    showToolBar: (xmlLoaded) ? (downloading) ? false : (installing) ? false : true : false
     platformInverted: invertedTheme
     property int insMethod:null
     property bool invertedTheme: null
@@ -68,13 +68,10 @@ PageStackWindow {
     }
     ToolBarLayout {
         id: toolBarLayout
-
-        opacity: (downloading) ? 0.3 : (installing) ? 0.3 : 1.0
         ToolButton {
             flat: true
             platformInverted: invertedTheme
             iconSource: "toolbar-back"
-            enabled: (downloading) ? false : (installing) ? false : true
             onClicked: {
                 if(cateFilter=="") {
                 if(window.pageStack.depth <= 1)  {
@@ -90,7 +87,6 @@ PageStackWindow {
         }
         ToolButton {
             flat: true
-            enabled: (downloading) ? false : (installing) ? false : true
             platformInverted: invertedTheme
             iconSource: "toolbar-list"
             onClicked: {
@@ -103,7 +99,6 @@ PageStackWindow {
         }
         ToolButton {
             flat: true
-            enabled: (downloading) ? false : (installing) ? false : true
             platformInverted: invertedTheme
             iconSource: "toolbar-search"
             onClicked: {
@@ -122,7 +117,6 @@ PageStackWindow {
         }
         ToolButton {
             flat: true
-            enabled: (downloading) ? false : (installing) ? false : true
             platformInverted: invertedTheme
             iconSource:(invertedTheme) ? "ui/settings-inv.svg" : "ui/settings.svg"
             onClicked: window.pageStack.push(Qt.resolvedUrl("ConfigPage.qml"))

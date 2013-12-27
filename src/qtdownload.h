@@ -31,7 +31,7 @@ private:
     Download* downll;
 signals:
     Q_INVOKABLE void done();
-    Q_INVOKABLE void error();
+
     Q_INVOKABLE void donefile();
     Q_INVOKABLE void tam();//info banner
     Q_INVOKABLE void cancelled();//cancel download

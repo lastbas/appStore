@@ -4,7 +4,17 @@ import com.nokia.extras 1.1
 
 
 Page {
-    id: windowP
+    id: windowP;
+    tools: (searching) ? tlBar : (cateFilter) ? tlBar : toolBarLayout
+
+    ToolBarLayout {
+        id:tlBar
+        ToolButton {
+            flat:true
+            iconSource: "toolbar-back"
+        }
+    }
+
     function xmlErrorF() { retryButton.visible=true; errorText.visible=true;  model.source=""; xmlLoaded=false; xmlError=true}
     function retry() { retryButton.visible=false; errorText.visible=false;  model.source="http://storeage.eu.pn/data.xml"; xmlError=false }
     function updateViewContentHeight() { rosterView.contentHeight=(repeater.count*itemHeight)+headerheight; }
@@ -15,7 +25,7 @@ Page {
         contentWidth: columnContent.width
         clip:true
         //contentHeight:(searching) ? (searchString=="") ? 0 : (appCount*itemHeight)+headerheight : (cateFilter=="") ? (repeater.count*itemHeight)+headerheight : (appCount*itemHeight)+headerheight
-        contentHeight: (searching && cateFilter) ? (appCount*itemHeight)+headerheight : (repeater.count*itemHeight)+headerheight
+        contentHeight: (appCount*itemHeight)+headerheight
         boundsBehavior: Flickable.StopAtBounds
         flickableDirection: Flickable.VerticalFlick
         Rectangle {
@@ -147,72 +157,6 @@ Page {
                 id: background
                 x: 2; y: 2; width: parent.width - x*2; height: parent.height - y*2
             }
-            /*Button {
-                id:dButton
-                //anchors { horizontalCenter: backBnt.horizontalCenter; horizontalCenterOffset: (downloading) ? 0 : -25; top:backBnt.bottom; topMargin: 10 }
-                visible:false
-                height: (installing) ? 0 : 40
-                width:(finished) ? 120 : (downloading) ? 44 : 120
-                text:(!finished) ? (!downloading) ? "Download" : "" : "Install"
-                iconSource: (downloading) ? "ui/x-marked.svg" : ""
-                platformInverted: invertedTheme
-                onClicked:{
-                    if(text=="") {
-                        dlhelper.cancelDownload();
-                        busyind.value=0
-                    }
-                    if(!downloading) {
-                        if(!finished) {
-
-                        downloading=true
-                            if(!link){
-                                dlhelper.setTarget(sis);
-                                dlhelper.download();
-                            }else{
-                                dlhelper.setLink(link);
-                                dlhelper.download();
-                            }
-                        } else {
-                            if(insMethod==1){
-                                core.sisInstallGUI(sis);
-                            }
-                            else {
-                                dlhelper.installDownload(sis);
-                                installing=true
-                            }
-
-                            finished=false
-                        }
-                    }
-                }
-                Text {
-                    text:(installing) ? "Installing..." : ""
-                    color:"#737373"
-                    anchors { horizontalCenter: dButton.horizontalCenter; verticalCenter: dButton.verticalCenter; verticalCenterOffset: 20 }
-                }
-                ProgressBar {
-                    id:busyind
-                    anchors {right: parent.left; rightMargin: 10; verticalCenter: parent.verticalCenter }
-                    minimumValue: 0
-                    maximumValue: 100
-                    platformInverted: invertedTheme
-                    width:110
-                    value:(!downloading) ? 0 : dlhelper.getProgress();
-                    visible: (downloading) ? true : false
-                }
-                Timer {
-                    running: (downloading) ? true : false
-                    repeat: true
-                    interval: 1200
-                    onTriggered: {
-                        busyind.value = dlhelper.getProgress();
-                    }
-                    onRunningChanged: {
-                        busyind.value = 0
-                    }
-                }
-            }
-*/
             Row {
                 id: topLayout
                 x: 10; y: 15;  height: appIcon.height; width: parent.width;
@@ -245,80 +189,7 @@ Page {
                 }
 
             }
-           /* Column {
-                spacing: 0
-                id: details
-                width: parent.width - 20
-                anchors { top: topLayout.bottom;  left:parent.left; leftMargin: 15}
-                opacity: 0
-                Text {
-                 id: appDev
-                 text:"By "+dev
-                 color:"#737373"
-                 font.pointSize: 6; font.bold: true
-                }
-                Text {
-                    id:ver
-                    text: "Version: " + version
-                    font.pointSize: 6; font.bold: false
-                     color:"#737373"
-                }
 
-            }*/
-           /* Flickable {
-                id:detailFlick
-                contentHeight: infoText.height+screenShot.height+50
-                clip: true
-                opacity:0
-                interactive: false
-                flickableDirection: Flickable.VerticalFlick
-                anchors { top: details.bottom; topMargin: 10;  left:parent.left; leftMargin: 15; bottom:parent.bottom; right:parent.right; rightMargin: 15}
-                Column {
-                    Text {
-                        id:infoText
-                        text:dtltext
-                        wrapMode: Text.Wrap
-                        width:330
-                        color: (invertedTheme) ? "black" : "white"
-                        textFormat: Text.RichText;
-                    }
-                    Image {
-                        id:screenShot
-                        visible:(screenshot) ? true : false
-                        height:(screenshot) ? 600 : 0
-                        width:330
-                        BusyIndicator {
-                            platformInverted: invertedTheme
-                            anchors.centerIn: parent
-                            visible:screenShot.progress<1.0
-                            running:screenShot.progress<1.0
-                            width:60
-                            height:60
-                        }
-                    }
-                }
-            }
-
-           states: [
-                State {
-                name: "Details"
-                PropertyChanges { target: recipe; enabled: false }
-                PropertyChanges { target: recipe; height: windowP.height }
-                PropertyChanges { target: rosterView; explicit: true; contentY: recipe.y+header.height }
-                PropertyChanges { target: details; opacity: 1; x: 0 }
-                PropertyChanges { target: rosterView; interactive: false }
-                PropertyChanges { target: dButton; visible:true }
-                PropertyChanges { target: backBnt; visible:true }
-                PropertyChanges { target: detailFlick; interactive:true;opacity: 1 }
-                PropertyChanges { target: screenShot; source:screenshot }
-            }
-           ]
-           transitions: [ Transition {
-                ParallelAnimation {
-                    NumberAnimation { duration: 200; properties: "height,contentY,opacity" }
-                }
-              }
-           ]*/
         }
     }
 //---------------------END-DELEGATE--------------------------//
@@ -331,6 +202,7 @@ Page {
             downloading=false
         }
         onTam: {
+            infobanner.text = "Application Installed"
             infobanner.open();
             installing=false
         }
@@ -341,6 +213,17 @@ Page {
         }
 
     }
+    Connections {
+        target:dll
+        onError: {
+            infobanner.text = "Download Error"
+            infobanner.open();
+            downloading=false;
+            finished=false;
+            console.log("Download error")
+        }
+    }
+
     Item {
         id:loader
         anchors { horizontalCenter: parent.horizontalCenter
@@ -410,12 +293,12 @@ Page {
     }
     InfoBanner {
         id: infobanner
-        timeout: 2500
+        timeout: 3800
         onClicked: {
             infobanner.close();
         }
-        text: "Application installed."
-        iconSource: "ui/done.png"
+        //text: "Application installed."
+        //iconSource: "ui/done.png"
     }
     states: [
         State {

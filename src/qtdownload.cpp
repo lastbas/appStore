@@ -33,7 +33,7 @@ void QtDownload::setTarget(const QString &t) {
     if (localFile.exists(lB)) {
         emit done();
     } else {
-    this->target = QString("http://www.storeage.eu.pn/"+t);
+    this->target = QString("http://www.storeage.eu.pn/data/sis/"+t);
     }
 }
 void QtDownload::setLink(const QString &l) {

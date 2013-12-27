@@ -71,6 +71,7 @@ void Download::com(){
     if(reply->error()){
         qDebug()<<"ERROR - COM ; "<<reply->error();
         file->remove();
+        emit error();
         emit cda();
     }
     reply->deleteLater();
