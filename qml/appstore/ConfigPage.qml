@@ -4,12 +4,18 @@ import "storage.js" as Storage
 
 Page {
     id:configPage
-    tools:
+    tools:tolBar
+    ToolBar {
+        id:tolBar
+        platformInverted: false
+        tools:tolBarLayout
+    }
         ToolBarLayout {
+            id:tolBarLayout
         ToolButton {
             flat: true
             iconSource: "toolbar-back"
-            platformInverted: window.platformInverted
+            //platformInverted: window.platformInverted
             onClicked: if(!window.pageStack.depth <= 1) {
                            window.pageStack.pop()
                            Storage.setSetting("invertedTheme",invertedTheme)
@@ -17,8 +23,6 @@ Page {
                        }
         }
     }
-
-
     Column {
         id:column
         anchors.fill: parent
@@ -149,7 +153,6 @@ Page {
             }
         }
     Component.onCompleted: {
-        //
         selectionDialog.selectedIndex = (window.driveSaved=="C") ? 0 : (window.driveSaved=="E") ? 1 : 2
     }
 }

@@ -5,8 +5,9 @@ import "storage.js" as Storage
 
 PageStackWindow {
     id: window
-    initialPage: MainPage { }
+    initialPage: MainPage {  }
     showStatusBar: true
+
     showToolBar: (xmlLoaded) ? (downloading) ? false : (installing) ? false : true : false
     platformInverted: invertedTheme
     property int insMethod:null
@@ -66,32 +67,59 @@ PageStackWindow {
             close();
         }
     }
+    ToolBar {
+        id:sharedToolBar
+        tools: toolBarLayout
+        platformInverted: false
+    }
+    ToolBarLayout {
+        id:tlBar
+        ToolButton {
+            flat:true
+            iconSource: "toolbar-back"
+            //platformInverted: invertedTheme
+            onClicked: {
+               /* if(searching==false || cateFilter=="" ) {
+                    window.pageStack.pop()
+                } else {*/
+                    searching=false
+                    searchString=""
+                    cateFilter=""
+                    sharedToolBar.setTools(toolBarLayout)
+               // }
+            }
+        }
+    }
+
     ToolBarLayout {
         id: toolBarLayout
         ToolButton {
             flat: true
-            platformInverted: invertedTheme
+            //platformInverted: invertedTheme
             iconSource: "toolbar-back"
             onClicked: {
-                if(cateFilter=="") {
-                if(window.pageStack.depth <= 1)  {
-                           closeYesNo.open()
-                       } else {
-                           window.pageStack.pop()
-                       }
+                if(window.pageStack.depth <= 1) {
+                    closeYesNo.open();
                 } else {
-                    cateFilter=""
-                    categoriesView=false
+                    window.pageStack.pop()
                 }
+                if(searching==true || cateFilter!="") {
+                    sharedToolBar.setTools(tlBar)
+                }
+                console.log(window.pageStack.depth)
+
+
             }
         }
         ToolButton {
             flat: true
-            platformInverted: invertedTheme
+            //platformInverted: invertedTheme
             iconSource: "toolbar-list"
             onClicked: {
                 categoriesView=true
+
                 window.pageStack.push(Qt.createComponent("CategoriesPage.qml"))
+               // sharedToolBar.setTools(tlBar)
 
             }
 
@@ -99,26 +127,18 @@ PageStackWindow {
         }
         ToolButton {
             flat: true
-            platformInverted: invertedTheme
+            //platformInverted: invertedTheme
             iconSource: "toolbar-search"
             onClicked: {
-                if(searching) {
-                    searching=false
-                    checked=false
-                }
-                else
-                {
-                    searching=true
-                    checked=true
-                }
+                searching=true
+                sharedToolBar.setTools(tlBar)
             }
-            checkable: true
-            checked: false
         }
         ToolButton {
             flat: true
-            platformInverted: invertedTheme
-            iconSource:(invertedTheme) ? "ui/settings-inv.svg" : "ui/settings.svg"
+            //platformInverted: invertedTheme
+            //iconSource:(invertedTheme) ? "ui/settings-inv.svg" : "ui/settings.svg"
+            iconSource:"ui/settings.svg"
             onClicked: window.pageStack.push(Qt.resolvedUrl("ConfigPage.qml"))
         }
     }

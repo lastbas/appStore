@@ -3,7 +3,7 @@ import com.nokia.symbian 1.1
 
 Page {
     id:detailPage
-    tools: toolBarLayout
+    tools: sharedToolBar
     Flickable {
         id:detailFlick
         contentHeight: details.height + dtlColumn.height + 69 //EE

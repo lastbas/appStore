@@ -5,20 +5,22 @@ import com.nokia.symbian 1.1
 
 Page {
     id:page
-    tools:
-        ToolBarLayout {
+    tools:tolBar
+    ToolBar {
+        id:tolBar
+        tools: tolBarLayout
+        platformInverted: false
+    }
+
+    ToolBarLayout {
+        id:tolBarLayout
         ToolButton {
             flat: true
             iconSource: "toolbar-back"
-            platformInverted: window.platformInverted
+            //platformInverted: window.platformInverted
             onClicked: {
-                if(window.pageStack.depth <= 1) {
-                    Qt.quit();
-                } else {
                     categoriesView=false
                     window.pageStack.pop();
-
-                }
             }
         }
     }
@@ -50,30 +52,30 @@ Column {
        }
 
     }
-
     Component {
         id:categoriesDel
         ListItem {
            height: 60
-
            platformInverted: window.invertedTheme
            onClicked: {
-               page.pageStack.pop()
+               page.pageStack.pop();
+               page.pageStack.pop(); //
                window.cateFilter = name
+               sharedToolBar.setTools(tlBar)
            }
            Image {
-           source: img
-           x:10
-           anchors { verticalCenter: parent.verticalCenter;  }
+               source: img
+               x:10
+               anchors { verticalCenter: parent.verticalCenter;  }
            }
-               Text {
-                   id:catext
-                   text: name
-                   color: (window.invertedTheme) ? "black" : "white"
-                   x:80
-                   font.pointSize: 7.5;
-                   anchors { verticalCenter: parent.verticalCenter;  }
-               }
+           Text {
+               id:catext
+               text: name
+               color: (window.invertedTheme) ? "black" : "white"
+               x:80
+               font.pointSize: 7.5;
+               anchors { verticalCenter: parent.verticalCenter;  }
+           }
         }
     }
 }

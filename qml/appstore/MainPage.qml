@@ -5,16 +5,7 @@ import com.nokia.extras 1.1
 
 Page {
     id: windowP;
-    tools: (searching) ? tlBar : (cateFilter) ? tlBar : toolBarLayout
-
-    ToolBarLayout {
-        id:tlBar
-        ToolButton {
-            flat:true
-            iconSource: "toolbar-back"
-        }
-    }
-
+    tools: sharedToolBar
     function xmlErrorF() { retryButton.visible=true; errorText.visible=true;  model.source=""; xmlLoaded=false; xmlError=true}
     function retry() { retryButton.visible=false; errorText.visible=false;  model.source="http://storeage.eu.pn/data.xml"; xmlError=false }
     function updateViewContentHeight() { rosterView.contentHeight=(repeater.count*itemHeight)+headerheight; }
@@ -25,7 +16,7 @@ Page {
         contentWidth: columnContent.width
         clip:true
         //contentHeight:(searching) ? (searchString=="") ? 0 : (appCount*itemHeight)+headerheight : (cateFilter=="") ? (repeater.count*itemHeight)+headerheight : (appCount*itemHeight)+headerheight
-        contentHeight: (appCount*itemHeight)+headerheight
+        contentHeight: (searching) ?  (appCount*itemHeight)+headerheight : (cateFilter) ? (appCount*itemHeight)+headerheight : (repeater.count*itemHeight)+headerheight
         boundsBehavior: Flickable.StopAtBounds
         flickableDirection: Flickable.VerticalFlick
         Rectangle {
@@ -74,7 +65,7 @@ Page {
             id: searchField
             width:parent.width
             height:fieldSpace
-            Behavior on height { NumberAnimation { duration:200 } }
+            Behavior on height { NumberAnimation { duration:300 } }
             anchors {bottom:columnContent.top; top:header.bottom }
             placeholderText: "Search Here"
             onTextChanged: {
@@ -115,13 +106,13 @@ Page {
 
             visible: {
                 if(searching==true) {
-                    var patt = searchString.toLowerCase()
-                    if(patt.toLowerCase().indexOf(title.toLowerCase()))
+                    var sh = searchString.toLowerCase()
+                    if(sh.toLowerCase().indexOf(title.toLowerCase()))
                     {
                         return false;
 
                     }
-                    else
+                    else                                                     //THIS THING IS TOO DIRTY (IMO)
                     {
                         return true;
                     }
@@ -130,7 +121,6 @@ Page {
                 }
             }
             onVisibleChanged: {
-                if(recipe.height==itemHeight)  {
                     if(visible==true) {
                         appCount++
                     }
@@ -138,19 +128,15 @@ Page {
                     {
                         appCount--
                     }
-                }
                 if(categoriesView) {
                     rosterView.contentY = 0
                     recipe.state = '';
                 }
             }
-
-
             Component.onCompleted: appCount=repeater.count
             platformInverted: invertedTheme
             onClicked: {
-                /*recipe.state = 'Details';
-                searching=false*/
+                sharedToolBar.setTools(toolBarLayout);
                 windowP.pageStack.push(Qt.createComponent("DetailsView.qml"))
             }
             Item {
