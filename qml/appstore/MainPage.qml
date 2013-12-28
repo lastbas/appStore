@@ -137,7 +137,8 @@ Page {
             platformInverted: invertedTheme
             onClicked: {
                 sharedToolBar.setTools(toolBarLayout);
-                windowP.pageStack.push(Qt.createComponent("DetailsView.qml"))
+                windowP.pageStack.push(Qt.createComponent("DetailsView.qml"));
+                uidGet = uidApp.uidTo(uid);
             }
             Item {
                 id: background
@@ -270,6 +271,7 @@ Page {
          XmlRole { name: "dtltext"; query: "dtltext/string()"}
          XmlRole { name: "dev"; query: "dev/string()" }
          XmlRole { name: "cat"; query: "cat/string()" }
+         XmlRole { name: "uid"; query: "uid/string()" }
          onStatusChanged: {
              switch (status) {
              case XmlListModel.Error:  xmlErrorF();

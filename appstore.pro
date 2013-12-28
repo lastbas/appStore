@@ -7,7 +7,7 @@ DEPLOYMENT.display_name = "Store"
 QML_IMPORT_PATH =
 ICON = appstore.svg
 
-LIBS += -lapgrfx -lswinstcli
+LIBS += -lapgrfx -lswinstcli -lsisregistryclient -lapgrfx -lapparc
 
 DEFINES += QT_USE_FAST_CONCATENATION \
            QT_USE_FAST_OPERATOR_PLUS
@@ -25,8 +25,6 @@ MMP_RULES += "OPTION gcce -march=armv6 -mfpu=vfp -mfloat-abi=softfp -marm"
 
     DEPLOYMENT += my_deployment
 
-    DEPLOYMENT.display_name += Store
-
     vendorinfo += "%{\"\"}" ":\"\""
 }
 # Speed up launching on MeeGo/Harmattan when using applauncherd daemon
@@ -37,14 +35,11 @@ CONFIG += qt-components
 
 # The .cpp file which was generated for your project. Feel free to hack it.
 HEADERS += src/qtdownload.h src/fim.h src/download.h src/core.h \
-    src/HttpReq.h
+    src/HttpReq.h src/uidversion.h
 
 SOURCES += main.cpp src/qtdownload.cpp src/fim.cpp src/download.cpp src/core.cpp \
-    src/HttpReq.cpp
+    src/HttpReq.cpp src/uidversion.cpp
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
 qtcAddDeployment()
-
-
-

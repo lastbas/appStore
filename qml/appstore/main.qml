@@ -53,6 +53,7 @@ PageStackWindow {
     property int fieldSpace: (searching) ? 50 : 0
     property bool searching: false
     property bool installing: false
+    property string uidGet: ""
     QueryDialog {
         id:closeYesNo
         titleText: "Warning"

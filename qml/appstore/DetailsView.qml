@@ -11,7 +11,7 @@ Page {
         anchors { right:parent.right; left:parent.left; top:parent.top; bottom:parent.bottom; topMargin: 5;  rightMargin: 10; leftMargin: 10; }
         Item {
             id:details
-            height: 135
+            height: 145
             width: parent.width
             Row {
                 id:iconName
@@ -46,6 +46,11 @@ Page {
                 }
                 Text {
                     text:"Version: " + version
+                    color:"#737373"
+                    font.pointSize: 6; font.bold: true
+                }
+                Text {
+                    text:"Installed Version: " + uidGet
                     color:"#737373"
                     font.pointSize: 6; font.bold: true
                 }

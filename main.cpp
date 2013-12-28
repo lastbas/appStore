@@ -9,7 +9,7 @@
 #include <QCoreApplication>
 #include <core.h>
 #include <download.h>
-//#include <fim.h>
+#include <uidversion.h>
 Q_DECL_EXPORT int main(int argc, char *argv[])
 {
     QScopedPointer<QApplication> app(createApplication(argc, argv));
@@ -25,9 +25,8 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     viewer.rootContext()->setContextProperty("dll",&pHas);
     core f;
     viewer.rootContext()->setContextProperty("core",&f);
-
-//    Installer hp;
-//    viewer.rootContext()->setContextProperty("sldr",&hp);
+    AppUid appISN;
+    viewer.rootContext()->setContextProperty("uidApp",&appISN);
     //internet connection opening
     QNetworkConfigurationManager ppp;
     QNetworkSession *nnn = new QNetworkSession(ppp.defaultConfiguration());
