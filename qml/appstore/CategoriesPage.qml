@@ -48,7 +48,7 @@ Column {
             source:"http://storeage.eu.pn/categories.xml"
             query: "/catalogue/book"
             XmlRole { name: "name"; query: "name/string()" }
-            XmlRole { name: "img"; query: "img/string()"}
+            //XmlRole { name: "img"; query: "img/string()"}
        }
 
     }
@@ -57,22 +57,23 @@ Column {
         ListItem {
            height: 60
            platformInverted: window.invertedTheme
+           subItemIndicator: true
            onClicked: {
                page.pageStack.pop();
                page.pageStack.pop(); //
                window.cateFilter = name
                sharedToolBar.setTools(tlBar)
            }
-           Image {
+           /*Image {
                source: img
                x:10
                anchors { verticalCenter: parent.verticalCenter;  }
-           }
+           }*/
            Text {
                id:catext
                text: name
                color: (window.invertedTheme) ? "black" : "white"
-               x:80
+               x:20
                font.pointSize: 7.5;
                anchors { verticalCenter: parent.verticalCenter;  }
            }

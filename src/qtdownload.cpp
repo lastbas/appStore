@@ -9,7 +9,7 @@
 #include <QDebug>
 #include <QDesktopServices>
 #include <QDir>
-
+#include <core.h>
 #include <QtNetwork>
 
 QtDownload::QtDownload(QWidget *parent) : QObject(parent) {
@@ -49,12 +49,12 @@ void QtDownload::setLink(const QString &l) {
 void QtDownload::installDownload(const QString &ii) {
     QThread* thread = new QThread;
     Installer* iiHf = new Installer();
+
     iiHf->drive(pan);
     QString sol = i + ii;
-    qDebug()<< sol;
-
     iiHf->filInst(sol,ii);
     iiHf->moveToThread(thread);
+
     QObject::connect(iiHf,SIGNAL(ok()),this,SLOT(ok()),Qt::QueuedConnection);
     QObject::connect(thread, SIGNAL(started()), iiHf, SLOT(process()));
     QObject::connect(iiHf, SIGNAL(finished()), thread, SLOT(quit()));
@@ -64,6 +64,47 @@ void QtDownload::installDownload(const QString &ii) {
     return;
 }
 
+
+void QtDownload::doUninstall(const QString &uidStr) {
+
+    QThread* thread = new QThread;
+    Installer* worker = new Installer();
+
+    TPtrC16 tdesc(reinterpret_cast<const TText*>(uidStr.constData()));
+    core core;
+    worker->Uninstall(core.HexStr2Int32(tdesc));
+    worker->moveToThread(thread);
+    QObject::connect(worker, SIGNAL(uninstallFinished()),this,SLOT(uninstallFinished()),Qt::QueuedConnection);
+    QObject::connect(thread, SIGNAL(started()), worker, SLOT(test()));
+    QObject::connect(worker, SIGNAL(uninstallFinished()), thread, SLOT(quit()));
+    QObject::connect(worker, SIGNAL(uninstallFinished()), worker, SLOT(deleteLater()));
+    QObject::connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
+    thread->start();
+
+}
+
+TInt QtDownload::Uninstall(TInt aUid) //this is from MiniCMD sources
+{
+    TUid uid;
+    uid.iUid = aUid;
+
+    SwiUI::RSWInstSilentLauncher iLauncher;
+
+    User::LeaveIfError(iLauncher.Connect());
+
+    SwiUI::TUninstallOptions options;
+    options.iBreakDependency = SwiUI::EPolicyAllowed;
+    options.iKillApp = SwiUI::EPolicyAllowed;
+    SwiUI::TUninstallOptionsPckg optPckg(options);
+
+    TInt ret = iLauncher.SilentUninstall(uid, optPckg, SwiUI::KSisxMimeType());
+
+    iLauncher.Close();
+    qDebug("Application Uninstalled");
+    finishUninstall();
+    return ret;
+
+}
 void QtDownload::delFile(const QString &file){
     QString path = tr("C:\\private\\e6002cd5") + "/" + file;
     QFile ii(path);
@@ -97,7 +138,6 @@ void QtDownload::statech(State st)
     qDebug()<<"xxx : "<<st;
 }
 void QtDownload::downComp(){
-    qDebug()<<"Bitttttttiii";
     emit done();
 }
 void QtDownload::empty()
@@ -108,4 +148,8 @@ void QtDownload::path(const QString &pa)
 {
     pan.clear();
     pan = pa;
+}
+void QtDownload::uninstallFinished()
+{
+    emit finishUninstall();
 }

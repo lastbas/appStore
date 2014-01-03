@@ -8,28 +8,28 @@ PageStackWindow {
     initialPage: MainPage {  }
     showStatusBar: true
 
-    showToolBar: (xmlLoaded) ? (downloading) ? false : (installing) ? false : true : false
+    showToolBar: (xmlLoaded) ? (downloading) ? false : (installing) ? false : (uninstalling) ? false : true : false
     platformInverted: invertedTheme
     property int insMethod:null
     property bool invertedTheme: null
     property string driveSaved: null
 
     Component.onCompleted: {
-        // this happens when xml is being loaded //
         Storage.getDatabase(); // do not remove this
         Storage.initialize(); // do not remove this
         if(Storage.getSetting("firstRun")=="un") {
             console.log("First Run detected.")
             Storage.setSetting("invertedTheme","true")
             invertedTheme = true
-            Storage.setSetting("insMeth","1")
-            insMethod = 1
+            Storage.setSetting("insMeth","0")
+            insMethod = 0
             Storage.setSetting("insDrive","C")
             driveSaved = "C"
             Storage.setSetting("firstRun", "false")
         } else {
             invertedTheme =  Storage.getSetting("invertedTheme");
-            insMethod = Storage.getSetting("insMeth");
+            //insMethod = Storage.getSetting("insMeth");
+            insMethod = 0
             driveSaved = Storage.getSetting("insDrive")
             console.log("Default Settings loaded")
         }
@@ -38,8 +38,7 @@ PageStackWindow {
     }
     property bool downloading: false
     property bool finished: false
-    property bool cancel: false
-
+    property bool uninstalling: false
     property int appCount: 0
     property int headerheight: 70
     property int itemHeight: 80
@@ -53,7 +52,8 @@ PageStackWindow {
     property int fieldSpace: (searching) ? 50 : 0
     property bool searching: false
     property bool installing: false
-    property string uidGet: ""
+
+
     QueryDialog {
         id:closeYesNo
         titleText: "Warning"
@@ -78,67 +78,49 @@ PageStackWindow {
         ToolButton {
             flat:true
             iconSource: "toolbar-back"
-            //platformInverted: invertedTheme
             onClicked: {
-               /* if(searching==false || cateFilter=="" ) {
-                    window.pageStack.pop()
-                } else {*/
                     searching=false
                     searchString=""
                     cateFilter=""
                     sharedToolBar.setTools(toolBarLayout)
-               // }
             }
         }
     }
-
     ToolBarLayout {
         id: toolBarLayout
         ToolButton {
-            flat: true
-            //platformInverted: invertedTheme
-            iconSource: "toolbar-back"
+            flat: true;
+            iconSource: "toolbar-back";
             onClicked: {
+                dlhelper.cancelDownload();
                 if(window.pageStack.depth <= 1) {
                     closeYesNo.open();
                 } else {
-                    window.pageStack.pop()
+                    window.pageStack.pop();
                 }
                 if(searching==true || cateFilter!="") {
-                    sharedToolBar.setTools(tlBar)
+                    sharedToolBar.setTools(tlBar);
                 }
-                console.log(window.pageStack.depth)
-
-
             }
         }
         ToolButton {
-            flat: true
-            //platformInverted: invertedTheme
-            iconSource: "toolbar-list"
+            flat: true;
+            iconSource: "toolbar-list";
             onClicked: {
-                categoriesView=true
-
-                window.pageStack.push(Qt.createComponent("CategoriesPage.qml"))
-               // sharedToolBar.setTools(tlBar)
-
+                categoriesView=true;
+                window.pageStack.push(Qt.createComponent("CategoriesPage.qml"));
             }
-
-
         }
         ToolButton {
-            flat: true
-            //platformInverted: invertedTheme
-            iconSource: "toolbar-search"
+            flat: true;
+            iconSource: "toolbar-search";
             onClicked: {
-                searching=true
-                sharedToolBar.setTools(tlBar)
+                searching=true;
+                sharedToolBar.setTools(tlBar);
             }
         }
         ToolButton {
             flat: true
-            //platformInverted: invertedTheme
-            //iconSource:(invertedTheme) ? "ui/settings-inv.svg" : "ui/settings.svg"
             iconSource:"ui/settings.svg"
             onClicked: window.pageStack.push(Qt.resolvedUrl("ConfigPage.qml"))
         }
@@ -150,5 +132,5 @@ PageStackWindow {
         onCategorieChanged: {
             cateFilter = core.getCatFilterName()
         }
-        }
+    }
 }

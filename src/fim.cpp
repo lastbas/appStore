@@ -1,5 +1,6 @@
 #include <fim.h>
 #include <QtCore>
+#include <core.h>
 Installer::Installer() {
     iSeck.iUpgrade = SwiUI::EPolicyNotAllowed; //dont touch
     iSeck.iOCSP = SwiUI::EPolicyNotAllowed; //dont touch
@@ -60,6 +61,7 @@ int Installer::filInst(const QString &uril, const QString &in)
     del = in;
     return 0;
 }
+
 void Installer::ex()
 {
     emit ok();
@@ -105,4 +107,29 @@ void Installer::drive(const QString &aa)
         qDebug()<<"bossss::::"<<aa;
         acma = 0;
     }
+}
+void Installer::Uninstall(TInt aUid) //this is from MiniCMD sources
+{
+//    TUid uid;
+    uid.iUid = aUid;
+
+}
+void Installer::test()
+{
+    RDebug::Print(_L("Started"));
+
+    SwiUI::RSWInstSilentLauncher iLauncher;
+
+    User::LeaveIfError(iLauncher.Connect());
+
+    SwiUI::TUninstallOptions options;
+    options.iBreakDependency = SwiUI::EPolicyAllowed;
+    options.iKillApp = SwiUI::EPolicyAllowed;
+    SwiUI::TUninstallOptionsPckg optPckg(options);
+
+    TInt ret = iLauncher.SilentUninstall(uid, optPckg, SwiUI::KSisxMimeType());
+
+    iLauncher.Close();
+    qDebug("Application Uninstalled");
+    emit uninstallFinished();
 }

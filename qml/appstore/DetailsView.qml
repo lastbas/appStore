@@ -4,6 +4,27 @@ import com.nokia.symbian 1.1
 Page {
     id:detailPage
     tools: sharedToolBar
+    property string installedDrive: ""
+    function updateVerify() {
+      if(versionInstalled=="NI") {
+          updateAv=false;
+       } else if(versionInstalled==version) {
+          updateAv=false;
+          } else {
+          updateAv=true;
+       }
+    }
+    Timer {
+        running: (downloading) ? true : false
+        repeat: true
+        interval: 1000
+        onTriggered: {
+            busyind.value = dlhelper.getProgress();
+        }
+        onRunningChanged: {
+            busyind.value = 0
+        }
+    }
     Flickable {
         id:detailFlick
         contentHeight: details.height + dtlColumn.height + 69 //EE
@@ -11,7 +32,7 @@ Page {
         anchors { right:parent.right; left:parent.left; top:parent.top; bottom:parent.bottom; topMargin: 5;  rightMargin: 10; leftMargin: 10; }
         Item {
             id:details
-            height: 145
+            height:192
             width: parent.width
             Row {
                 id:iconName
@@ -29,6 +50,7 @@ Page {
                     }
                 }
             Column {
+                id:co
                 Text {
                     text: title
                     color: (invertedTheme) ? "black" : "white"
@@ -50,28 +72,71 @@ Page {
                     font.pointSize: 6; font.bold: true
                 }
                 Text {
-                    text:"Installed Version: " + uidGet
+                    text:(installedDrive=="NI") ? "  " : "Installed on " + installedDrive + ":"
                     color:"#737373"
-                    font.pointSize: 6; font.bold: true
+                    font.pointSize: 6.1; font.bold: true
                 }
               }
             }
+            Rectangle {
+                id:divider
+                anchors {
+                    top:iconName.bottom;
+                    topMargin: 15;
+                    right:parent.right
+                    left:parent.left
+                }
+                color: "grey"
+                visible:invertedTheme
+                height:1
+                //width:340;
+            }
+            Connections {
+                id:connector
+                target: dlhelper
+                onTam: {
+                    finished=true;
+                    versionInstalled = uidApp.uidTo(uid);
+                    installedDrive = uidApp.checkInsDrive(uid);
+                    updateVerify();
+                    check.text="INSTALLED"
+                }
+                onFinishUninstall: {
+                    versionInstalled = uidApp.uidTo(uid);
+                    installedDrive = uidApp.checkInsDrive(uid);
+                    updateVerify();
+                    check.text=""
+                    finished=false;
+                    downloading=false;
+                    uninstalling=false;
+                    infobanner.iconSource= "ui/done.png"
+                    infobanner.text = "Application Uninstalled"
+                }
+                onDone: {
+                    downloading = false
+                    if(!insMethod==1){
+                        dlhelper.installDownload(sis);
+                        installing=true
+                        finished=false
+                    } else {
+                        finished = true
+                    }
+                }
+
+            }
             Button {
                 id:downloadButton
-                anchors { top: iconName.bottom; right:parent.right }
-                height: (installing) ? 0 : 40
-                width:(finished) ? 120 : (downloading) ? 44 : 120
-                text:(!finished) ? (!downloading) ? "Download" : "" : "Install"
-                iconSource: (downloading) ? "ui/x-marked.svg" : ""
+                anchors { top: iconName.bottom; right:parent.right; topMargin: 20 }
+                visible:(installing) ? false : (versionInstalled=="NI") ? true : (updateAv) ? true: false;
+                text:(!finished) ? (!downloading) ? "Download" : "Cancel" : "Install"
                 platformInverted: invertedTheme
                 onClicked:{
-                    if(text=="") {
+                    if(downloading) {
                         dlhelper.cancelDownload();
                         busyind.value=0
                     }
                     if(!downloading) {
                         if(!finished) {
-
                         downloading=true
                             if(!link){
                                 dlhelper.setTarget(sis);
@@ -88,42 +153,74 @@ Page {
                                 dlhelper.installDownload(sis);
                                 installing=true
                             }
-
                             finished=false
                         }
                     }
                 }
-                Text {
-                    text:(installing) ? "Installing..." : ""
-                    color:"#737373"
-                    anchors { horizontalCenter: downloadButton.horizontalCenter; verticalCenter: downloadButton.verticalCenter; verticalCenterOffset: 20 }
-                }
-                ProgressBar {
-                    id:busyind
-                    anchors {right: parent.left; rightMargin: 10; verticalCenter: parent.verticalCenter }
-                    minimumValue: 0
-                    maximumValue: 100
-                    platformInverted: invertedTheme
-                    width:250
-                    value:(!downloading) ? 0 : dlhelper.getProgress();
-                    visible: (downloading) ? true : false
-                }
-                Timer {
-                    running: (downloading) ? true : false
-                    repeat: true
-                    interval: 1200
-                    onTriggered: {
-                        busyind.value = dlhelper.getProgress();
-                    }
-                    onRunningChanged: {
-                        busyind.value = 0
-                    }
+
+
+            }
+            Text {
+                text:(installing) ? "Installing..." : (uninstalling) ? "Uninstalling..." :  ""
+                color:"#737373"
+                font.pointSize: 7; font.bold: true
+                height: downloadButton.height
+                anchors { top: divider.top; topMargin: 15; horizontalCenter: parent.horizontalCenter }
+            }
+            ProgressBar {
+                id:busyind
+                //anchors {right: parent.left; rightMargin: 10; verticalCenter: parent.verticalCenter }
+                anchors {  verticalCenter: downloadButton.verticalCenter; left:parent.left; right:downloadButton.left; rightMargin: 10 }
+                minimumValue: 0
+                maximumValue: 100
+                platformInverted: invertedTheme
+                value:(!downloading) ? 0 : dlhelper.getProgress();
+                visible: (downloading) ? true : false
+            }
+            Row {
+                anchors { top: iconName.bottom; right:parent.right; topMargin: 20 }
+            Button {
+                id:runButton
+                width:110
+                checked: true
+                visible:(uninstalling) ? false : (versionInstalled==="NI") ? false : (updateAv) ? false : true
+                //anchors { top: iconName.bottom; right:parent.right; topMargin: 20 }
+                platformInverted: invertedTheme
+                text: "Run"
+                onClicked: {
+                    core.doRunApp(uid);
                 }
             }
+            Button {
+                id:unButton
+                width:120
+                visible:(uninstalling) ? false : (runButton.visible) ? true : false
+                //anchors { top: runButton.top; topMargin: 47; right:runButton.right; }
+                platformInverted: invertedTheme
+                text: "Uninstall"
+                onClicked: {
+                    uninstalling=true
+                    dlhelper.doUninstall(uid);
+                }
+            }
+            }
+        }
+        Rectangle {
+            id:divider2
+            anchors {
+                bottom: detail2.top
+                bottomMargin: 10
+                right:parent.right
+                left:parent.left
+            }
+            color: "grey"
+            visible:invertedTheme
+            height:1
+            //width:340;
         }
         Item {
             id:detail2
-            anchors {top: details.bottom; topMargin: 25; right:parent.right; left:parent.left }
+            anchors {top: details.bottom; topMargin: 20; right:parent.right; left:parent.left }
             Column {
                 id:dtlColumn
                 spacing: 2
@@ -134,7 +231,6 @@ Page {
                     wrapMode: Text.Wrap
                     textFormat: Text.RichText;
                     width: 340
-                    onWidthChanged: console.log(width)
                 }
                 Image {
                     id:sShot
@@ -155,9 +251,9 @@ Page {
         }
     }
     Component.onCompleted:  {
-        dlhelper.delFile(sis)
-        finished=false
-        downloading=false
+        versionInstalled = uidApp.uidTo(uid);
+        installedDrive = uidApp.checkInsDrive(uid);
+        dlhelper.delFile(sis);
+        updateVerify();
     }
-
 }

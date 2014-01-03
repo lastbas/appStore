@@ -18,10 +18,15 @@ class AppUid : public QObject
     Q_OBJECT
 public:
     explicit AppUid(QObject *parent = 0);
+    ~AppUid();
+    //Q_INVOKABLE TInt Uninstall(TInt aUid);
+    Q_INVOKABLE QString checkInsDrive(const QString &uidDa);
     Q_INVOKABLE QString uidTo(const QString& uidDa);
     QString uidPl(const QString& nh);
 private:
     mutable int iError;
+
+
 };
 
 #endif // UIDVERSION_H

@@ -60,7 +60,8 @@ Page {
         ListItem {
             id:installMethod
             platformInverted: invertedTheme
-
+            enabled:false
+            opacity: 0.3
             ListItemText {
                 text:"Install Method:"
                 id:txt

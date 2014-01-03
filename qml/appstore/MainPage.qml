@@ -6,6 +6,8 @@ import com.nokia.extras 1.1
 Page {
     id: windowP;
     tools: sharedToolBar
+
+
     function xmlErrorF() { retryButton.visible=true; errorText.visible=true;  model.source=""; xmlLoaded=false; xmlError=true}
     function retry() { retryButton.visible=false; errorText.visible=false;  model.source="http://storeage.eu.pn/data.xml"; xmlError=false }
     function updateViewContentHeight() { rosterView.contentHeight=(repeater.count*itemHeight)+headerheight; }
@@ -15,10 +17,10 @@ Page {
         anchors { fill: parent; }
         contentWidth: columnContent.width
         clip:true
-        //contentHeight:(searching) ? (searchString=="") ? 0 : (appCount*itemHeight)+headerheight : (cateFilter=="") ? (repeater.count*itemHeight)+headerheight : (appCount*itemHeight)+headerheight
         contentHeight: (searching) ?  (appCount*itemHeight)+headerheight : (cateFilter) ? (appCount*itemHeight)+headerheight : (repeater.count*itemHeight)+headerheight
         boundsBehavior: Flickable.StopAtBounds
         flickableDirection: Flickable.VerticalFlick
+
         Rectangle {
             id:header
             color:"black"
@@ -89,7 +91,6 @@ Page {
                     id:repeater
                     delegate: recipeDelegate
                     model:model
-
                 }
             }
 
@@ -100,10 +101,20 @@ Page {
         id: recipeDelegate
 
         ListItem {
+            property string versionInstalled: ""
+            property bool installed: null
+            property bool updateAv: false
+            function updateVerify() {
+              if(versionInstalled=="NI") {
+                  updateAv=false;
+               } else if(versionInstalled==version) {
+                  updateAv=false;
+                  } else {
+                  updateAv=true;
+               }
+            }
             id: recipe
             height:itemHeight
-
-
             visible: {
                 if(searching==true) {
                     var sh = searchString.toLowerCase()
@@ -133,16 +144,33 @@ Page {
                     recipe.state = '';
                 }
             }
-            Component.onCompleted: appCount=repeater.count
+            Component.onCompleted: {
+                appCount=repeater.count
+                versionInstalled = uidApp.uidTo(uid);
+                if(versionInstalled=="NI") {
+                    installed = false
+
+                } else {
+                    installed = true
+                    check.text="INSTALLED"
+                    check.color = "#737373"
+                    updateVerify();
+                    if(updateAv==true) {
+                        check.text = "UPDATE"
+                        check.color = "blue"
+                    }
+                }
+
+            }
+            Text {
+                id:check
+                font.pointSize: 6;
+                anchors { right:parent.right; rightMargin: 20; verticalCenter: parent.verticalCenter }
+            }
             platformInverted: invertedTheme
             onClicked: {
                 sharedToolBar.setTools(toolBarLayout);
                 windowP.pageStack.push(Qt.createComponent("DetailsView.qml"));
-                uidGet = uidApp.uidTo(uid);
-            }
-            Item {
-                id: background
-                x: 2; y: 2; width: parent.width - x*2; height: parent.height - y*2
             }
             Row {
                 id: topLayout
@@ -177,6 +205,7 @@ Page {
 
             }
 
+
         }
     }
 //---------------------END-DELEGATE--------------------------//
@@ -184,11 +213,8 @@ Page {
     Connections {
         id:connector
         target: dlhelper
-        onDone: {
-            finished = true
-            downloading=false
-        }
         onTam: {
+            infobanner.iconSource= "ui/done.png"
             infobanner.text = "Application Installed"
             infobanner.open();
             installing=false
@@ -198,11 +224,11 @@ Page {
             finished=false;
             downloading=false;
         }
-
     }
     Connections {
         target:dll
         onError: {
+            infobanner.iconSource= ""
             infobanner.text = "Download Error"
             infobanner.open();
             downloading=false;
@@ -261,6 +287,7 @@ Page {
     XmlListModel {
          id: model
          source:"http://storeage.eu.pn/data.xml"
+         //source:"E:/data.xml"
          query: "/catalogue/book"
          XmlRole { name: "title"; query: "title/string()" }
          XmlRole { name: "picture"; query: "picture/string()"}

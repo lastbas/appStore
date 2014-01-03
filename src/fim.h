@@ -6,6 +6,17 @@
 #include <SWInstApi.h>
 #include <SWInstDefs.h>
 
+#include <e32math.h>
+#include <APACMDLN.H>
+#include <W32STD.H>
+//#include <aknglobalmsgquery.h>
+//#include <aknglobalnote.h>
+#include <BAFINDF.H>
+#include <BADESCA.H>
+//#include <SWInstApi.h>
+#include <APGTASK.H>
+#include <e32base.h>
+#include <e32des8.h>
 class Installer : public QObject {
     Q_OBJECT
 public:
@@ -13,12 +24,16 @@ public:
     ~Installer();
     int filInst(const QString& uril,const QString &in);
     Q_INVOKABLE void drive(const QString& aa);
+    void Uninstall(TInt aUid);
 public slots:
     void process();
     void ex();
+    void test();
+
 signals:
     void finished();
     void ok();
+    void uninstallFinished();
 private:
     QString hh;
     QString del;
@@ -29,5 +44,7 @@ private:
     SwiUI::TInstallOptionsPckg iSeckPckg; //dont touch
     int acma;
     QString ppp;
+
+    TUid uid;
 };
 #endif // FIM_H

@@ -98,7 +98,7 @@ int Download::cancelDownload(){
         reply->abort();
     }
     emit cda();
-    qDebug()<<"bir";
+    qDebug()<<"Download Canceled";
     return 0;
 }
 State Download::state(){
