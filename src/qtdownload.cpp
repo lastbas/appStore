@@ -70,8 +70,6 @@ void QtDownload::doUninstall(const QString &uidStr) {
     QThread* thread = new QThread;
     Installer* worker = new Installer();
 
-   /* TPtrC16 tdesc(reinterpret_cast<const TText*>(uidStr.constData()));
-    core core;*/
     bool ok;
     uint uids = uidStr.toUInt(&ok,16);
 

@@ -15,10 +15,6 @@ QString AppUid::uidTo(const QString &uidDa) {
     User::LeaveIfError(iSisRegSession.Connect());
     Swi::RSisRegistryEntry packageEntry;
     QString retu;
-    /*TPtrC16 tdesc(reinterpret_cast<const TText*>(uidDa.constData()));
-    TUid uid;
-    core core;
-    uid.iUid = core.HexStr2Int32(tdesc);*/
     bool ok;
     uint uids = uidDa.toUInt(&ok,16);
     TUid uidt;
@@ -38,10 +34,6 @@ QString AppUid::checkInsDrive(const QString &uidDa) {
     User::LeaveIfError(iSisRegSession.Connect());
     Swi::RSisRegistryEntry packageEntry;
     QString drive;
-    /*TPtrC16 tdesc(reinterpret_cast<const TText*>(uidDa.constData()));
-    TUid uid;
-    core core;
-    uid.iUid = core.HexStr2Int32(tdesc);*/
     bool ok;
     uint uids = uidDa.toUInt(&ok,16);
     TUid uidt;
