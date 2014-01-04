@@ -22,7 +22,7 @@ void core::sisInstallGUI(const QString &sisname) {
     CleanupStack::PopAndDestroy(&apaLsSession );
 }
 
-TInt core::RunApp(TInt aUid)
+void core::doRunApp(const QString &uidDa)
 {
     RApaLsSession apaLsSession;
     TInt ret = apaLsSession.Connect();
@@ -32,9 +32,11 @@ TInt core::RunApp(TInt aUid)
     CleanupClosePushL(apaLsSession);
 
     TApaAppInfo appInfo;
-    TUid uid;
-    uid.iUid = aUid;
-    ret = apaLsSession.GetAppInfo(appInfo, uid);
+    bool ok;
+    uint uids = uidDa.toUInt(&ok,16);
+    TUid uidt;
+    uidt.iUid = uids;
+    ret = apaLsSession.GetAppInfo(appInfo, uidt);
     if(ret == KErrNone)
     {
         CApaCommandLine* cmdLine = CApaCommandLine::NewLC();
@@ -47,10 +49,10 @@ TInt core::RunApp(TInt aUid)
     return ret;
 }
 
-void core::doRunApp(const QString uidStr) {
+/*void core::doRunApp(const QString uidStr) {
    TPtrC16 tdesc(reinterpret_cast<const TText*>(uidStr.constData()));
    RunApp(HexStr2Int32(tdesc));
-}
+}*/
 
 TInt core::GetHex(char hex)
 {

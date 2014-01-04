@@ -40,6 +40,7 @@ PageStackWindow {
     property bool finished: false
     property bool uninstalling: false
     property int appCount: 0
+    property int updateCount: 0
     property int headerheight: 70
     property int itemHeight: 80
     property bool xmlLoaded: false
@@ -52,8 +53,8 @@ PageStackWindow {
     property int fieldSpace: (searching) ? 50 : 0
     property bool searching: false
     property bool installing: false
-
-
+    property string otd: ""
+    property bool isThereAnyVisible: false
     QueryDialog {
         id:closeYesNo
         titleText: "Warning"
@@ -82,6 +83,8 @@ PageStackWindow {
                     searching=false
                     searchString=""
                     cateFilter=""
+                    otd=""
+                    categoriesView=false
                     sharedToolBar.setTools(toolBarLayout)
             }
         }
@@ -98,7 +101,8 @@ PageStackWindow {
                 } else {
                     window.pageStack.pop();
                 }
-                if(searching==true || cateFilter!="") {
+                if(searching==true || cateFilter!="" || otd!="") {
+                    categoriesView=false
                     sharedToolBar.setTools(tlBar);
                 }
             }

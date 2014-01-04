@@ -96,10 +96,15 @@ Page {
                 target: dlhelper
                 onTam: {
                     finished=true;
+                    if(updateAv) {
+                        updateCount--;
+                    }
+
                     versionInstalled = uidApp.uidTo(uid);
                     installedDrive = uidApp.checkInsDrive(uid);
                     updateVerify();
                     check.text="INSTALLED"
+                    check.color = "#737373"
                 }
                 onFinishUninstall: {
                     versionInstalled = uidApp.uidTo(uid);
@@ -179,6 +184,7 @@ Page {
             }
             Row {
                 anchors { top: iconName.bottom; right:parent.right; topMargin: 20 }
+                spacing: 3
             Button {
                 id:runButton
                 width:110

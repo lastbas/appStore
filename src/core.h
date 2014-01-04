@@ -28,10 +28,10 @@ public:
 
     explicit core(QObject *parent = 0);
     Q_INVOKABLE void sisInstallGUI(const QString &sisname);
-    Q_INVOKABLE TInt RunApp(TInt aUid);
+    Q_INVOKABLE void doRunApp(const QString &uidStr);
     //Q_INVOKABLE TInt Uninstall(TInt aUid);
     //'Q_INVOKABLE void doUninstall(const QString &uidStr);
-    Q_INVOKABLE void doRunApp(const QString uidStr);
+    //Q_INVOKABLE void doRunApp(const QString uidStr);
     Q_INVOKABLE TInt32 HexStr2Int32(const TDesC & aHexStr);
     Q_INVOKABLE TInt GetHex(char hex);
     //Q_INVOKABLE void compareString(const QString &str, const QString &str2);

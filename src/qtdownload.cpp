@@ -70,9 +70,12 @@ void QtDownload::doUninstall(const QString &uidStr) {
     QThread* thread = new QThread;
     Installer* worker = new Installer();
 
-    TPtrC16 tdesc(reinterpret_cast<const TText*>(uidStr.constData()));
-    core core;
-    worker->Uninstall(core.HexStr2Int32(tdesc));
+   /* TPtrC16 tdesc(reinterpret_cast<const TText*>(uidStr.constData()));
+    core core;*/
+    bool ok;
+    uint uids = uidStr.toUInt(&ok,16);
+
+    worker->Uninstall(uids);
     worker->moveToThread(thread);
     QObject::connect(worker, SIGNAL(uninstallFinished()),this,SLOT(uninstallFinished()),Qt::QueuedConnection);
     QObject::connect(thread, SIGNAL(started()), worker, SLOT(test()));

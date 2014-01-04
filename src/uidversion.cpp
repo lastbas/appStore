@@ -15,11 +15,15 @@ QString AppUid::uidTo(const QString &uidDa) {
     User::LeaveIfError(iSisRegSession.Connect());
     Swi::RSisRegistryEntry packageEntry;
     QString retu;
-    TPtrC16 tdesc(reinterpret_cast<const TText*>(uidDa.constData()));
+    /*TPtrC16 tdesc(reinterpret_cast<const TText*>(uidDa.constData()));
     TUid uid;
     core core;
-    uid.iUid = core.HexStr2Int32(tdesc);
-                if( KErrNone == packageEntry.Open(iSisRegSession, uid))
+    uid.iUid = core.HexStr2Int32(tdesc);*/
+    bool ok;
+    uint uids = uidDa.toUInt(&ok,16);
+    TUid uidt;
+    uidt.iUid = uids;
+                if( KErrNone == packageEntry.Open(iSisRegSession, uidt))
                 {
                     TPtrC16 almabos(packageEntry.VersionL().Name().Alloc()->Des());
                     retu = QString::fromRawData(reinterpret_cast<const QChar*>(almabos.Ptr()),almabos.Length());
@@ -34,11 +38,15 @@ QString AppUid::checkInsDrive(const QString &uidDa) {
     User::LeaveIfError(iSisRegSession.Connect());
     Swi::RSisRegistryEntry packageEntry;
     QString drive;
-    TPtrC16 tdesc(reinterpret_cast<const TText*>(uidDa.constData()));
+    /*TPtrC16 tdesc(reinterpret_cast<const TText*>(uidDa.constData()));
     TUid uid;
     core core;
-    uid.iUid = core.HexStr2Int32(tdesc);
-                if( KErrNone == packageEntry.Open(iSisRegSession, uid))
+    uid.iUid = core.HexStr2Int32(tdesc);*/
+    bool ok;
+    uint uids = uidDa.toUInt(&ok,16);
+    TUid uidt;
+    uidt.iUid = uids;
+                if( KErrNone == packageEntry.Open(iSisRegSession, uidt))
                 {
                     drive = packageEntry.SelectedDriveL();
                 }

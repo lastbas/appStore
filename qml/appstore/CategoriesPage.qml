@@ -32,7 +32,28 @@ Page {
         visible: (model.progress<1.0) ? true : false
         platformInverted: window.invertedTheme
     }
-
+    Component {
+        id:categoriesDel
+        ListItem {
+           height: 60
+           platformInverted: window.invertedTheme
+           subItemIndicator: true
+           onClicked: {
+               page.pageStack.pop();
+               page.pageStack.pop();
+               window.cateFilter = name
+               sharedToolBar.setTools(tlBar)
+           }
+           Text {
+               id:catext
+               text: name
+               color: (window.invertedTheme) ? "black" : "white"
+               x:20
+               font.pointSize: 7.5;
+               anchors { verticalCenter: parent.verticalCenter;  }
+           }
+        }
+    }
 Column {
     ListHeading {
         id:header
@@ -48,35 +69,62 @@ Column {
             source:"http://storeage.eu.pn/categories.xml"
             query: "/catalogue/book"
             XmlRole { name: "name"; query: "name/string()" }
-            //XmlRole { name: "img"; query: "img/string()"}
        }
 
     }
-    Component {
-        id:categoriesDel
-        ListItem {
-           height: 60
-           platformInverted: window.invertedTheme
-           subItemIndicator: true
-           onClicked: {
-               page.pageStack.pop();
-               page.pageStack.pop(); //
-               window.cateFilter = name
-               sharedToolBar.setTools(tlBar)
-           }
-           /*Image {
-               source: img
-               x:10
-               anchors { verticalCenter: parent.verticalCenter;  }
-           }*/
-           Text {
-               id:catext
-               text: name
-               color: (window.invertedTheme) ? "black" : "white"
-               x:20
-               font.pointSize: 7.5;
-               anchors { verticalCenter: parent.verticalCenter;  }
-           }
+
+    ListHeading {
+        id:onHere
+        visible: (model.progress<1.0) ? false : true
+        platformInverted: window.invertedTheme
+        ListItemText {
+            anchors { horizontalCenter: parent.horizontalCenter;  }
+            color: (window.invertedTheme) ? "#737373" : "#737373"
+            text: "On This Device"
+        }
+    }
+    ListItem {
+        id:inst
+        visible: (model.progress<1.0) ? false : true
+        subItemIndicator: true
+        platformInverted: window.invertedTheme
+        onClicked: {
+            otd="Installed"
+            page.pageStack.pop();
+            sharedToolBar.setTools(tlBar)
+            page.pageStack.pop();
+        }
+
+        ListItemText {
+            anchors { verticalCenter: parent.verticalCenter;  }
+            color: (window.invertedTheme) ? "black" : "white"
+            x:20
+            text: "Installed"
+        }
+    }
+    ListItem {
+        id:up
+        visible: (model.progress<1.0) ? false : true
+        subItemIndicator: true
+        platformInverted: window.invertedTheme
+        onClicked: {
+            otd="Update"
+            page.pageStack.pop();
+            sharedToolBar.setTools(tlBar)
+            page.pageStack.pop();
+        }
+
+        ListItemText {
+            color: (window.invertedTheme) ? "black" : "white"
+            anchors { verticalCenter: parent.verticalCenter;  }
+            x:20
+            text: "Updated"
+        }
+        ListItemText {
+            anchors { verticalCenter: parent.verticalCenter; right:parent.right; rightMargin: 50 }
+            color:"#487393"
+            visible:(updateCount==0) ? false : true
+            text:"("+updateCount+")"
         }
     }
 }

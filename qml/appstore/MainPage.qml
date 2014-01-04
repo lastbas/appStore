@@ -17,10 +17,9 @@ Page {
         anchors { fill: parent; }
         contentWidth: columnContent.width
         clip:true
-        contentHeight: (searching) ?  (appCount*itemHeight)+headerheight : (cateFilter) ? (appCount*itemHeight)+headerheight : (repeater.count*itemHeight)+headerheight
+        contentHeight: (otd) ? (appCount*itemHeight)+headerheight : (searching) ?  (appCount*itemHeight)+headerheight : (cateFilter) ? (appCount*itemHeight)+headerheight : (repeater.count*itemHeight)+headerheight
         boundsBehavior: Flickable.StopAtBounds
         flickableDirection: Flickable.VerticalFlick
-
         Rectangle {
             id:header
             color:"black"
@@ -46,20 +45,28 @@ Page {
                             anchors {
                                 bottom:parent.bottom
                             }
-                            color: "grey"
+                            color: "#487393"
                             visible:invertedTheme
                             height:2
                             width:header.width
                         }
                     }
-
                     Text {
                         id:headerText
                         anchors { horizontalCenter: parent.horizontalCenter; verticalCenter: parent.verticalCenter; }
-                        text: (cateFilter=="") ? (!searching) ? "Store" : (searchString=="") ? "Search" : "Search - "+searchString : cateFilter
+                        text: (otd) ? otd : (cateFilter=="") ? (!searching) ? "Store" : "Search" : cateFilter
                         font.pointSize: 9;
                         color: (invertedTheme) ? "black" : "white"
                     }
+                    Text {
+                        id:updates
+                        anchors { verticalCenter: parent.verticalCenter; right:parent.right; rightMargin:25 }
+                        text: (updateCount==1) ? updateCount+" UPDATE" : updateCount+" UPDATES"
+                        font.pointSize: 6;
+                        visible: (updateCount==0) ? false : true
+                        color: (invertedTheme) ?"#487393": "white"
+                    }
+
                 }
         }
 
@@ -91,15 +98,27 @@ Page {
                     id:repeater
                     delegate: recipeDelegate
                     model:model
+
                 }
             }
-
+        Text {
+            anchors { top: header.bottom; bottom:parent.bottom; topMargin: fieldSpace+10; horizontalCenter: parent.horizontalCenter  }
+            id:noItemVisible
+            visible:(xmlLoaded) ? (appCount==0) ? true : false : false
+            text:(searching) ? "No Results." : "There is no app for this section."
+        }
+    }
+    ScrollBar {
+        id: scrollBar
+        flickableItem: rosterView
+        orientation: Qt.Vertical
+        y:headerheight
+        anchors { right: rosterView.right; bottom:parent.bottom; top:parent.top }
+        platformInverted: invertedTheme
     }
 //-----------------------------DELEGATE----------------------------------------//
-
     Component {
         id: recipeDelegate
-
         ListItem {
             property string versionInstalled: ""
             property bool installed: null
@@ -116,19 +135,30 @@ Page {
             id: recipe
             height:itemHeight
             visible: {
-                if(searching==true) {
-                    var sh = searchString.toLowerCase()
-                    if(sh.toLowerCase().indexOf(title.toLowerCase()))
-                    {
-                        return false;
 
-                    }
-                    else                                                     //THIS THING IS TOO DIRTY (IMO)
-                    {
+                if(!otd=="") {
+                    if(check.text.toLowerCase()==otd.toLowerCase() ) {
                         return true;
+                    } else {
+
+                        return false;
                     }
                 } else {
-                    return (!cateFilter=="") ? (cat==cateFilter) ? true : false : true;
+                    if(searching==true) {
+                        var sh = searchString.toLowerCase()
+                        if(sh.toLowerCase().indexOf(title.toLowerCase()))
+                        {
+                            return false;
+
+                        }
+                        else                                                     //THIS THING IS TOO DIRTY (IMO)
+                        {
+
+                            return true;
+                        }
+                    } else {
+                        return(!cateFilter=="") ? (cat==cateFilter) ? true : false : true;
+                    }
                 }
             }
             onVisibleChanged: {
@@ -157,7 +187,8 @@ Page {
                     updateVerify();
                     if(updateAv==true) {
                         check.text = "UPDATE"
-                        check.color = "blue"
+                        check.color = "#487393"
+                        updateCount++
                     }
                 }
 
@@ -239,6 +270,7 @@ Page {
 
     Item {
         id:loader
+        visible:(xmlLoaded) ? false : true
         anchors { horizontalCenter: parent.horizontalCenter
                   verticalCenter: parent.verticalCenter
         }
@@ -277,7 +309,7 @@ Page {
         }
         BorderImage {
             id: logo
-            visible:(xmlError) ? true : (xmlLoaded) ? false : true
+            //visible:(xmlError) ? true : (xmlLoaded) ? false : true
             anchors { verticalCenterOffset: -50; verticalCenter: parent.verticalCenter; horizontalCenter: parent.horizontalCenter }
             source: "ui/appstore.png"
         }

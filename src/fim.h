@@ -9,11 +9,9 @@
 #include <e32math.h>
 #include <APACMDLN.H>
 #include <W32STD.H>
-//#include <aknglobalmsgquery.h>
-//#include <aknglobalnote.h>
+
 #include <BAFINDF.H>
 #include <BADESCA.H>
-//#include <SWInstApi.h>
 #include <APGTASK.H>
 #include <e32base.h>
 #include <e32des8.h>
