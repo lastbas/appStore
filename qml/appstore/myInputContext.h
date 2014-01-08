@@ -1,0 +1,4 @@
+#ifndef MYINPUTCONTEXT_H
+#define MYINPUTCONTEXT_H
+
+#endif // MYINPUTCONTEXT_H

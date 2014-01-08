@@ -4,23 +4,21 @@
 #include <QtNetwork/QNetworkReply>
 
 
-class HttpReq : public QObject {
+class version : public QObject {
     Q_OBJECT
 public:
-    explicit HttpReq();
-    ~HttpReq();
-
-   Q_INVOKABLE void setTarget(const QString& t);
+    explicit version();
+    ~version();
+    void test();
 
 private:
     QNetworkAccessManager manager;
     QString target;
 
 signals:
-    void done();
-
+    Q_INVOKABLE void upAvaiable();
 public slots:
-  Q_INVOKABLE  void download();
-    void downloadFinished(QNetworkReply* data);
+    Q_INVOKABLE  void get();
+    void check(QNetworkReply* data);
     void downloadProgress(qint64 recieved, qint64 total);
 };

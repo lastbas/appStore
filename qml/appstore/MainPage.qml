@@ -7,9 +7,9 @@ Page {
     id: windowP;
     tools: sharedToolBar
 
-
+    Loader { id:dialogLoader; anchors.fill: parent }
     function xmlErrorF() { retryButton.visible=true; errorText.visible=true;  model.source=""; xmlLoaded=false; xmlError=true}
-    function retry() { retryButton.visible=false; errorText.visible=false;  model.source="http://storeage.eu.pn/data.xml"; xmlError=false }
+    function retry() { retryButton.visible=false; errorText.visible=false;  model.source="http://repo.symbian.odin.magissia.com/data/newdata.xml"; xmlError=false }
     function updateViewContentHeight() { rosterView.contentHeight=(repeater.count*itemHeight)+headerheight; }
 //------------------------------PAGE---------------------------//
     Flickable {
@@ -60,13 +60,33 @@ Page {
                     }
                     Text {
                         id:updates
-                        anchors { verticalCenter: parent.verticalCenter; right:parent.right; rightMargin:25 }
+                        anchors { verticalCenter: parent.verticalCenter; right:parent.right; rightMargin:20 }
                         text: (updateCount==1) ? updateCount+" UPDATE" : updateCount+" UPDATES"
                         font.pointSize: 6;
                         visible: (updateCount==0) ? false : true
                         color: (invertedTheme) ?"#487393": "white"
+                        MouseArea {
+                            anchors.fill:parent
+                            onClicked: {
+                                otd="Update"
+                                sharedToolBar.setTools(tlBar)
+                            }
+                        }
                     }
-
+                    Text {
+                        id:news
+                        anchors { verticalCenter: parent.verticalCenter; left:parent.left; leftMargin:20 }
+                        text: (thereIsNew) ? "NEW APPS" : ""
+                        font.pointSize: 6;
+                        color: (invertedTheme) ?"#ff8600": "white"
+                        MouseArea {
+                            anchors.fill:parent
+                            onClicked: {
+                                otd="New"
+                                sharedToolBar.setTools(tlBar)
+                            }
+                        }
+                    }
                 }
         }
 
@@ -106,6 +126,7 @@ Page {
             id:noItemVisible
             visible:(xmlLoaded) ? (appCount==0) ? true : false : false
             text:(searching) ? "No Results." : "There is no app for this section."
+
         }
     }
     ScrollBar {
@@ -196,6 +217,14 @@ Page {
             Text {
                 id:check
                 font.pointSize: 6;
+                text: (newon) ? "NEW" : ""
+                color: (newon) ? "#ff8600" : "#737373"
+                Component.onCompleted: {
+                    if(text=="NEW") {
+                        thereIsNew=true
+                    }
+                }
+
                 anchors { right:parent.right; rightMargin: 20; verticalCenter: parent.verticalCenter }
             }
             platformInverted: invertedTheme
@@ -268,6 +297,7 @@ Page {
         }
     }
 
+
     Item {
         id:loader
         visible:(xmlLoaded) ? false : true
@@ -302,6 +332,8 @@ Page {
             platformInverted: invertedTheme
             text:"Retry"
             visible: xmlError
+            width:120
+
             anchors { horizontalCenter: parent.horizontalCenter; top:logo.bottom; topMargin:100 }
             onClicked: {
                 retry()
@@ -318,7 +350,7 @@ Page {
 //---------------------------MODEL-------------------------//
     XmlListModel {
          id: model
-         source:"http://storeage.eu.pn/data.xml"
+         source:"http://repo.symbian.odin.magissia.com/data/newdata.xml"
          //source:"E:/data.xml"
          query: "/catalogue/book"
          XmlRole { name: "title"; query: "title/string()" }
@@ -331,6 +363,8 @@ Page {
          XmlRole { name: "dev"; query: "dev/string()" }
          XmlRole { name: "cat"; query: "cat/string()" }
          XmlRole { name: "uid"; query: "uid/string()" }
+         XmlRole { name: "coid"; query: "coid/string()" }
+         XmlRole { name: "newon"; query: "new/string()" }
          onStatusChanged: {
              switch (status) {
              case XmlListModel.Error:  xmlErrorF();

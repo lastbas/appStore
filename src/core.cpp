@@ -9,6 +9,17 @@ core::core(QObject *parent) :
 
 }
 
+/*void core::test() {
+    QGraphicsObject *root;
+    obj = root->findChild<QObject *>("object");
+    obj->setProperty("showStatusBar",false);
+
+}*/
+
+void core::installUpdate() {
+    QString link = "C:/private/0xE6002CD5/update.sis";
+    QDesktopServices::openUrl(QUrl(link));
+}
 
 void core::sisInstallGUI(const QString &sisname) {
     RApaLsSession apaLsSession;
@@ -22,6 +33,19 @@ void core::sisInstallGUI(const QString &sisname) {
     CleanupStack::PopAndDestroy(&apaLsSession );
 }
 
+void core::killApp(const QString &uidDa) {
+    TPtrC16 tdesc(reinterpret_cast<const TText*>(uidDa.constData()));
+    TFindProcess processFinder(tdesc);
+    TFullName result;
+    RProcess processHandle;
+    while ( processFinder.Next(result) == KErrNone)
+    {
+       User::LeaveIfError(processHandle.Open ( result, EOwnerThread));
+       processHandle.Kill(KErrNone);
+       processHandle.Close();
+    }
+}
+
 void core::doRunApp(const QString &uidDa)
 {
     RApaLsSession apaLsSession;
@@ -33,9 +57,8 @@ void core::doRunApp(const QString &uidDa)
 
     TApaAppInfo appInfo;
     bool ok;
-    uint uids = uidDa.toUInt(&ok,16);
     TUid uidt;
-    uidt.iUid = uids;
+    uidt.iUid = uidDa.toUInt(&ok,16);
     ret = apaLsSession.GetAppInfo(appInfo, uidt);
     if(ret == KErrNone)
     {

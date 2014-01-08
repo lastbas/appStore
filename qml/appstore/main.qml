@@ -7,7 +7,7 @@ PageStackWindow {
     id: window
     initialPage: MainPage {  }
     showStatusBar: true
-
+    objectName: "object"
     showToolBar: (xmlLoaded) ? (downloading) ? false : (installing) ? false : (uninstalling) ? false : true : false
     platformInverted: invertedTheme
     property int insMethod:null
@@ -33,8 +33,7 @@ PageStackWindow {
             driveSaved = Storage.getSetting("insDrive")
             console.log("Default Settings loaded")
         }
-        dlhelper.path(driveSaved)
-
+        dlhelper.path(driveSaved);
     }
     property bool downloading: false
     property bool finished: false
@@ -53,8 +52,10 @@ PageStackWindow {
     property int fieldSpace: (searching) ? 50 : 0
     property bool searching: false
     property bool installing: false
+    property bool thereIsNew: false
     property string otd: ""
     property bool isThereAnyVisible: false
+
     QueryDialog {
         id:closeYesNo
         titleText: "Warning"

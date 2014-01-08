@@ -25,12 +25,16 @@ class core : public QObject
 {
     Q_OBJECT
 public:
+    QObject *obj;
 
     explicit core(QObject *parent = 0);
     Q_INVOKABLE void sisInstallGUI(const QString &sisname);
     Q_INVOKABLE void doRunApp(const QString &uidStr);
 
+    Q_INVOKABLE void installUpdate();
+    Q_INVOKABLE void killApp(const QString &uidDa);
 signals:
+
     Q_INVOKABLE void categorieChanged();
 
 public slots:

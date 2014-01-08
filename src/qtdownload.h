@@ -27,7 +27,7 @@ public:
     Q_INVOKABLE void doUninstall(const QString &uidStr);
     Q_INVOKABLE TInt Uninstall(TInt aUid);
 private:
-    Q_INVOKABLE QString target;
+    QString target;
     QString pan;
     QString flNa;
     Download* downll;
@@ -42,8 +42,6 @@ private slots:
 public slots:
     Q_INVOKABLE  void download();
     void ok();
-
-
     void proccc(int val);
     void statech(State st);
     void empty();

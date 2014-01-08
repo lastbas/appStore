@@ -16,9 +16,12 @@ QString AppUid::uidTo(const QString &uidDa) {
     Swi::RSisRegistryEntry packageEntry;
     QString retu;
     bool ok;
-    uint uids = uidDa.toUInt(&ok,16);
+    /*uint uids = uidDa.toUInt(&ok,16);
     TUid uidt;
-    uidt.iUid = uids;
+    uidt.iUid = uids;*/
+    TUid uidt;
+    uidt.iUid = uidDa.toUInt(&ok,16);
+
                 if( KErrNone == packageEntry.Open(iSisRegSession, uidt))
                 {
                     TPtrC16 almabos(packageEntry.VersionL().Name().Alloc()->Des());
@@ -35,9 +38,8 @@ QString AppUid::checkInsDrive(const QString &uidDa) {
     Swi::RSisRegistryEntry packageEntry;
     QString drive;
     bool ok;
-    uint uids = uidDa.toUInt(&ok,16);
     TUid uidt;
-    uidt.iUid = uids;
+    uidt.iUid = uidDa.toUInt(&ok,16);
                 if( KErrNone == packageEntry.Open(iSisRegSession, uidt))
                 {
                     drive = packageEntry.SelectedDriveL();

@@ -66,7 +66,7 @@ Column {
         delegate: categoriesDel
         model: XmlListModel {
             id: model
-            source:"http://storeage.eu.pn/categories.xml"
+            source:"http://repo.symbian.odin.magissia.com/data/categories.xml"
             query: "/catalogue/book"
             XmlRole { name: "name"; query: "name/string()" }
        }

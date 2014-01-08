@@ -1,5 +1,6 @@
 import QtQuick 1.1
 import com.nokia.symbian 1.1
+import QtWebKit 1.0
 
 Page {
     id:detailPage
@@ -27,9 +28,16 @@ Page {
     }
     Flickable {
         id:detailFlick
-        contentHeight: details.height + dtlColumn.height + 69 //EE
+       /* onMovementStarted: {
+            webView.renderingEnabled = false;
+        }*/
+        /*onMovementEnded: {
+            webView.renderingEnabled = true;
+        }*/
+       // contentHeight: (webView.visible) ? details.height + detail2.height + webView.height + 70 : details.height + detail2.height + comments.height + showCom.height + 70
+        contentHeight: (loader.source) ? details.height + detail2.height  + comments.height + showCom.height + loader.height + 100 : details.height + detail2.height  + comments.height + showCom.height + 100
         flickableDirection: Flickable.VerticalFlick
-        anchors { right:parent.right; left:parent.left; top:parent.top; bottom:parent.bottom; topMargin: 5;  rightMargin: 10; leftMargin: 10; }
+        anchors { right:parent.right; left:parent.left; top:parent.top; bottom:parent.bottom; topMargin: 5;  rightMargin: 10; leftMargin: 10;  }
         Item {
             id:details
             height:192
@@ -52,6 +60,7 @@ Page {
             Column {
                 id:co
                 Text {
+                    id:titleText
                     text: title
                     color: (invertedTheme) ? "black" : "white"
                     font.pointSize: 7.5;
@@ -86,8 +95,7 @@ Page {
                     right:parent.right
                     left:parent.left
                 }
-                color: "grey"
-                visible:invertedTheme
+                color:(window.invertedTheme) ? "grey" : "white"
                 height:1
                 //width:340;
             }
@@ -120,6 +128,7 @@ Page {
                 onDone: {
                     downloading = false
                     if(!insMethod==1){
+                        core.killApp(uid)
                         dlhelper.installDownload(sis);
                         installing=true
                         finished=false
@@ -152,9 +161,11 @@ Page {
                             }
                         } else {
                             if(insMethod==1){
+                                core.killApp(uid)
                                 core.sisInstallGUI(sis);
                             }
                             else {
+                                core.killApp(uid)
                                 dlhelper.installDownload(sis);
                                 installing=true
                             }
@@ -227,34 +238,86 @@ Page {
         Item {
             id:detail2
             anchors {top: details.bottom; topMargin: 20; right:parent.right; left:parent.left }
+            height:dtlColumn.height
             Column {
                 id:dtlColumn
-                spacing: 2
+                width:parent.width
+                height: detailText.height + sShot.height
+                spacing:15
                 Text {
+                    id: detailText
                     text: dtltext
                     color: (invertedTheme) ? "black" : "white"
                     font.pointSize: 6; font.bold: true
                     wrapMode: Text.Wrap
                     textFormat: Text.RichText;
-                    width: 340
+                    width: parent.width
                 }
                 Image {
                     id:sShot
+                    width: parent.width
                     source: (screenshot) ? screenshot : ""
-                    height:(screenshot) ? 600 : 0
-                    width: 340
                     fillMode: Image.PreserveAspectFit
-                    BusyIndicator {
-                        platformInverted: invertedTheme
-                        anchors.centerIn: parent
-                        visible:sShot.progress<1.0 && (screenshot)
-                        running:sShot.progress<1.0
-                        width:60
-                        height:60
-                    }
+                    height: (screenshot) ? 330 : 0
                 }
             }
         }
+        ListHeading {
+            id:comments
+            anchors {top: detail2.bottom; right:parent.right; left: parent.left; topMargin:25; leftMargin:-10; rightMargin:-10 }
+            platformInverted: window.invertedTheme
+            ListItemText {
+                anchors { horizontalCenter: parent.horizontalCenter;  }
+                color: (window.invertedTheme) ? "#737373" : "white"
+                text: "Comments Beta"
+            }
+        }
+        Button {
+            id:showCom
+            anchors {top: comments.bottom; right:parent.right;  left: parent.left; topMargin:20 }
+            platformInverted: window.invertedTheme
+            visible: (loader.source=="") ? true : false
+            text:"Show Comments"
+            onClicked: {
+                loader.source = "CommentsView.qml"
+            }
+
+        }
+        Loader {
+            id:loader
+            source:""
+            width:parent.width
+            anchors {top: comments.bottom; right:parent.right; left: parent.left; topMargin:0 }
+        }
+
+/*        WebView {
+            id:webView
+            visible:false
+            width:parent.width
+            anchors {top: comments.bottom; right:parent.right; left: parent.left; topMargin:0 }
+            contentsScale: 1
+            html: "<body bgcolor='#f1f1f1'></body>"
+            settings.pluginsEnabled: false
+            settings.javascriptEnabled: false
+            settings.javaEnabled: false
+            settings.javascriptCanAccessClipboard: false
+            settings.offlineStorageDatabaseEnabled: false
+            settings.offlineWebApplicationCacheEnabled: false
+            settings.localStorageDatabaseEnabled: false
+            property bool userLoggedonDisqus: false
+            onUrlChanged: {
+                if(url=="http://disqus.com/next/login-success/") {
+                    url=""
+                    userLoggedonDisqus=true
+                    url = "http://storeage.eu.pn/index.html?shortname='storecom'&title=" + coid
+                }
+                if(userLoggedonDisqus) if(url!= "http://storeage.eu.pn/index.html?shortname='storecom'&title=" + coid) {
+                        url=""
+                        url="http://storeage.eu.pn/index.html?shortname='storecom'&title=" + coid
+                    }
+                console.log(url)
+            }
+        }*/
     }
     Component.onCompleted:  {
         versionInstalled = uidApp.uidTo(uid);

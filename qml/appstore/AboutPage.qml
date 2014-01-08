@@ -16,4 +16,4 @@ Page {
         textFormat: Text.RichText;
     }
 }
-// not finished yet
+//dev list not finished yet!

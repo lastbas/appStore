@@ -33,7 +33,7 @@ void QtDownload::setTarget(const QString &t) {
     if (localFile.exists(lB)) {
         emit done();
     } else {
-    this->target = QString("http://www.storeage.eu.pn/data/sis/"+t);
+    this->target = QString("http://repo.symbian.odin.magissia.com/data/sis/"+t);
     }
 }
 void QtDownload::setLink(const QString &l) {
@@ -46,6 +46,7 @@ void QtDownload::setLink(const QString &l) {
     this->target = l;
     }
 }
+
 void QtDownload::installDownload(const QString &ii) {
     QThread* thread = new QThread;
     Installer* iiHf = new Installer();
