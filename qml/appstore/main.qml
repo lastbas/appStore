@@ -7,7 +7,6 @@ PageStackWindow {
     id: window
     initialPage: MainPage {  }
     showStatusBar: true
-    objectName: "object"
     showToolBar: (xmlLoaded) ? (downloading) ? false : (installing) ? false : (uninstalling) ? false : true : false
     platformInverted: invertedTheme
     property int insMethod:null
@@ -34,6 +33,7 @@ PageStackWindow {
             console.log("Default Settings loaded")
         }
         dlhelper.path(driveSaved);
+
     }
     property bool downloading: false
     property bool finished: false
@@ -136,6 +136,14 @@ PageStackWindow {
         target: core
         onCategorieChanged: {
             cateFilter = core.getCatFilterName()
+        }
+    }
+    Connections {
+        target: version
+        onUpAvaiable: {
+            console.log("Update avaiable")
+            window.pageStack.push(Qt.resolvedUrl("UpdatePage.qml"))
+
         }
     }
 }

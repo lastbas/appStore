@@ -6,6 +6,7 @@ Page {
     id:detailPage
     tools: sharedToolBar
     property string installedDrive: ""
+    property bool webViewRendering: false
     function updateVerify() {
       if(versionInstalled=="NI") {
           updateAv=false;
@@ -28,19 +29,18 @@ Page {
     }
     Flickable {
         id:detailFlick
-       /* onMovementStarted: {
-            webView.renderingEnabled = false;
-        }*/
-        /*onMovementEnded: {
-            webView.renderingEnabled = true;
-        }*/
-       // contentHeight: (webView.visible) ? details.height + detail2.height + webView.height + 70 : details.height + detail2.height + comments.height + showCom.height + 70
-        contentHeight: (loader.source) ? details.height + detail2.height  + comments.height + showCom.height + loader.height + 100 : details.height + detail2.height  + comments.height + showCom.height + 100
+        onMovementStarted: {
+            webViewRendering = false
+        }
+        onMovementEnded: {
+            webViewRendering = true
+        }
+        contentHeight: details.height + detail2.height + commentsHead.height + showCom.height + loader.height + 100
         flickableDirection: Flickable.VerticalFlick
         anchors { right:parent.right; left:parent.left; top:parent.top; bottom:parent.bottom; topMargin: 5;  rightMargin: 10; leftMargin: 10;  }
         Item {
             id:details
-            height:192
+            height:iconName.height + divider.height + buttonsColony.height + 70
             width: parent.width
             Row {
                 id:iconName
@@ -81,9 +81,17 @@ Page {
                     font.pointSize: 6; font.bold: true
                 }
                 Text {
-                    text:(installedDrive=="NI") ? "  " : "Installed on " + installedDrive + ":"
+                    text:(installedDrive=="NI") ? "" : "Installed on " + installedDrive + ":"
                     color:"#737373"
+                    //height: (text) ? 20 : 0
                     font.pointSize: 6.1; font.bold: true
+                }
+                Text {
+                    id: downCount
+                    //text: "Downloads: " + dlhelper.downCountl()  // for now
+                    color:"#737373"
+                   //height: (text) ? 20 : 0
+                    font.pointSize: 6; font.bold: true
                 }
               }
             }
@@ -91,147 +99,113 @@ Page {
                 id:divider
                 anchors {
                     top:iconName.bottom;
-                    topMargin: 15;
+                    topMargin: 20;
                     right:parent.right
                     left:parent.left
                 }
-                color:(window.invertedTheme) ? "grey" : "white"
+                color:"#737373"
                 height:1
                 //width:340;
             }
-            Connections {
-                id:connector
-                target: dlhelper
-                onTam: {
-                    finished=true;
-                    if(updateAv) {
-                        updateCount--;
-                    }
+            Column {
+                anchors { top: divider.bottom; topMargin: 20; horizontalCenter: parent.horizontalCenter }
+                spacing: 3
+                id:buttonsColony
+                height: downloadButton.height + runButton.height + unButton.height + busyind.height + instext.height + 15
+                width:parent.width - 100
+                Text {
+                    id:instext
+                    text:(installing) ? "Installing..." : (uninstalling) ? "Uninstalling..." :  ""
+                    color:"#737373"
+                    font.pointSize: 7; font.bold: true
+                    height:(text) ? downloadButton.height : 0
+                }
+                ProgressBar {
+                    id:busyind
+                    minimumValue: 0
+                    maximumValue: 100
+                    height:(visible) ? 25 : 0
+                    width:parent.width
+                    platformInverted: invertedTheme
+                    value: 0;
+                    visible: (downloading) ? true : false
+                }
+                Button {
+                    id:downloadButton
+                    visible:(installing) ? false : (versionInstalled=="NI") ? true : (updateAv) ? true: false;
+                    text: (!downloading) ? (updateAv) ? "Update" : "Install" : "Cancel"
+                    height: (visible) ? 40 : 0
+                    //width: 200
+                    width:parent.width
+                    platformInverted: invertedTheme
+                    onClicked:{
 
-                    versionInstalled = uidApp.uidTo(uid);
-                    installedDrive = uidApp.checkInsDrive(uid);
-                    updateVerify();
-                    check.text="INSTALLED"
-                    check.color = "#737373"
-                }
-                onFinishUninstall: {
-                    versionInstalled = uidApp.uidTo(uid);
-                    installedDrive = uidApp.checkInsDrive(uid);
-                    updateVerify();
-                    check.text=""
-                    finished=false;
-                    downloading=false;
-                    uninstalling=false;
-                    infobanner.iconSource= "ui/done.png"
-                    infobanner.text = "Application Uninstalled"
-                }
-                onDone: {
-                    downloading = false
-                    if(!insMethod==1){
-                        core.killApp(uid)
-                        dlhelper.installDownload(sis);
-                        installing=true
-                        finished=false
-                    } else {
-                        finished = true
-                    }
-                }
-
-            }
-            Button {
-                id:downloadButton
-                anchors { top: iconName.bottom; right:parent.right; topMargin: 20 }
-                visible:(installing) ? false : (versionInstalled=="NI") ? true : (updateAv) ? true: false;
-                text:(!finished) ? (!downloading) ? "Download" : "Cancel" : "Install"
-                platformInverted: invertedTheme
-                onClicked:{
-                    if(downloading) {
-                        dlhelper.cancelDownload();
-                        busyind.value=0
-                    }
-                    if(!downloading) {
-                        if(!finished) {
-                        downloading=true
-                            if(!link){
-                                dlhelper.setTarget(sis);
-                                dlhelper.download();
-                            }else{
-                                dlhelper.setLink(link);
-                                dlhelper.download();
+                        if(downloading) {
+                            dlhelper.cancelDownload();
+                            busyind.value=0
+                        }
+                        if(!downloading) {
+                            if(!finished) {
+                            downloading=true
+                                if(!link){
+                                    dlhelper.setTarget(sis);
+                                    dlhelper.download();
+                                }else{
+                                    dlhelper.setLink(link);
+                                    dlhelper.download();
+                                }
+                            } else {
+                                if(insMethod==1){
+                                    core.killApp(uid)
+                                    core.sisInstallGUI(sis);
+                                }
+                                else {
+                                    core.killApp(uid)
+                                    dlhelper.installDownload(sis);
+                                    installing=true
+                                }
+                                finished=false
                             }
-                        } else {
-                            if(insMethod==1){
-                                core.killApp(uid)
-                                core.sisInstallGUI(sis);
-                            }
-                            else {
-                                core.killApp(uid)
-                                dlhelper.installDownload(sis);
-                                installing=true
-                            }
-                            finished=false
                         }
                     }
                 }
-
-
-            }
-            Text {
-                text:(installing) ? "Installing..." : (uninstalling) ? "Uninstalling..." :  ""
-                color:"#737373"
-                font.pointSize: 7; font.bold: true
-                height: downloadButton.height
-                anchors { top: divider.top; topMargin: 15; horizontalCenter: parent.horizontalCenter }
-            }
-            ProgressBar {
-                id:busyind
-                //anchors {right: parent.left; rightMargin: 10; verticalCenter: parent.verticalCenter }
-                anchors {  verticalCenter: downloadButton.verticalCenter; left:parent.left; right:downloadButton.left; rightMargin: 10 }
-                minimumValue: 0
-                maximumValue: 100
-                platformInverted: invertedTheme
-                value:(!downloading) ? 0 : dlhelper.getProgress();
-                visible: (downloading) ? true : false
-            }
-            Row {
-                anchors { top: iconName.bottom; right:parent.right; topMargin: 20 }
-                spacing: 3
-            Button {
-                id:runButton
-                width:110
-                checked: true
-                visible:(uninstalling) ? false : (versionInstalled==="NI") ? false : (updateAv) ? false : true
-                //anchors { top: iconName.bottom; right:parent.right; topMargin: 20 }
-                platformInverted: invertedTheme
-                text: "Run"
-                onClicked: {
-                    core.doRunApp(uid);
+                Button {
+                    id:runButton
+                    //width:200
+                    width:parent.width
+                    height: (visible) ? 40 : 0
+                    checked: true
+                    visible:(uninstalling || installing || downloading) ? false : (versionInstalled==="NI") ? false : true
+                    platformInverted: invertedTheme
+                    text: "Run"
+                    onClicked: {
+                        core.doRunApp(uid);
+                    }
                 }
-            }
-            Button {
-                id:unButton
-                width:120
-                visible:(uninstalling) ? false : (runButton.visible) ? true : false
-                //anchors { top: runButton.top; topMargin: 47; right:runButton.right; }
-                platformInverted: invertedTheme
-                text: "Uninstall"
-                onClicked: {
-                    uninstalling=true
-                    dlhelper.doUninstall(uid);
+                Button {
+                    id:unButton
+                    height: (visible) ? 40 : 0
+                    //width:200
+                    width:parent.width
+                    visible:(runButton.visible) ? true : false
+                    platformInverted: invertedTheme
+                    text: "Uninstall"
+                    onClicked: {
+                        uninstalling=true
+                        dlhelper.doUninstall(uid);
+                    }
                 }
-            }
             }
         }
         Rectangle {
             id:divider2
             anchors {
-                bottom: detail2.top
-                bottomMargin: 10
+                top:details.bottom
+                topMargin: 10
                 right:parent.right
                 left:parent.left
             }
-            color: "grey"
-            visible:invertedTheme
+            color:"#737373"
             height:1
             //width:340;
         }
@@ -242,8 +216,9 @@ Page {
             Column {
                 id:dtlColumn
                 width:parent.width
-                height: detailText.height + sShot.height
+                height: downCount.height + detailText.height + sShot.height
                 spacing:15
+
                 Text {
                     id: detailText
                     text: dtltext
@@ -262,67 +237,95 @@ Page {
                 }
             }
         }
-        ListHeading {
+        Item {
             id:comments
-            anchors {top: detail2.bottom; right:parent.right; left: parent.left; topMargin:25; leftMargin:-10; rightMargin:-10 }
-            platformInverted: window.invertedTheme
-            ListItemText {
-                anchors { horizontalCenter: parent.horizontalCenter;  }
-                color: (window.invertedTheme) ? "#737373" : "white"
-                text: "Comments Beta"
-            }
-        }
-        Button {
-            id:showCom
-            anchors {top: comments.bottom; right:parent.right;  left: parent.left; topMargin:20 }
-            platformInverted: window.invertedTheme
-            visible: (loader.source=="") ? true : false
-            text:"Show Comments"
-            onClicked: {
-                loader.source = "CommentsView.qml"
-            }
-
-        }
-        Loader {
-            id:loader
-            source:""
+            anchors {top: detail2.bottom; right:parent.right; left: parent.left;   }
             width:parent.width
-            anchors {top: comments.bottom; right:parent.right; left: parent.left; topMargin:0 }
-        }
-
-/*        WebView {
-            id:webView
-            visible:false
-            width:parent.width
-            anchors {top: comments.bottom; right:parent.right; left: parent.left; topMargin:0 }
-            contentsScale: 1
-            html: "<body bgcolor='#f1f1f1'></body>"
-            settings.pluginsEnabled: false
-            settings.javascriptEnabled: false
-            settings.javaEnabled: false
-            settings.javascriptCanAccessClipboard: false
-            settings.offlineStorageDatabaseEnabled: false
-            settings.offlineWebApplicationCacheEnabled: false
-            settings.localStorageDatabaseEnabled: false
-            property bool userLoggedonDisqus: false
-            onUrlChanged: {
-                if(url=="http://disqus.com/next/login-success/") {
-                    url=""
-                    userLoggedonDisqus=true
-                    url = "http://storeage.eu.pn/index.html?shortname='storecom'&title=" + coid
+            ListHeading {
+                id:commentsHead
+                anchors { right:parent.right; left: parent.left;  leftMargin:-10; rightMargin:-10 }
+                platformInverted: window.invertedTheme
+                ListItemText {
+                    anchors { horizontalCenter: parent.horizontalCenter;  }
+                    color: (window.invertedTheme) ? "#737373" : "white"
+                    text: "Comments Beta"
                 }
-                if(userLoggedonDisqus) if(url!= "http://storeage.eu.pn/index.html?shortname='storecom'&title=" + coid) {
-                        url=""
-                        url="http://storeage.eu.pn/index.html?shortname='storecom'&title=" + coid
-                    }
-                console.log(url)
             }
-        }*/
+            Button {
+                id:showCom
+                anchors {top: commentsHead.bottom; right:parent.right;  left: parent.left; topMargin:20 }
+                platformInverted: window.invertedTheme
+                visible: (loader.source=="") ? true : false
+                text:"Show Comments"
+                onClicked: {
+                    loader.source = "CommentsView.qml"
+                }
+
+            }
+            Loader {
+                id:loader
+                source:""
+                width:parent.width
+                anchors {top: commentsHead.bottom; right:parent.right; left: parent.left;  }
+            }
+        }
     }
     Component.onCompleted:  {
+        dlhelper.incrDownCount(0,uid);
         versionInstalled = uidApp.uidTo(uid);
         installedDrive = uidApp.checkInsDrive(uid);
         dlhelper.delFile(sis);
         updateVerify();
+    }
+    Connections {
+        id:connector
+        target: dlhelper
+        onTam: {
+            finished=true;
+            if(updateAv) {
+                updateCount--;
+            }
+
+            versionInstalled = uidApp.uidTo(uid);
+            installedDrive = uidApp.checkInsDrive(uid);
+            updateVerify();
+            check.text="INSTALLED"
+            check.color = "#737373"
+        }
+        onFinishUninstall: {
+            versionInstalled = uidApp.uidTo(uid);
+            installedDrive = uidApp.checkInsDrive(uid);
+            updateVerify();
+            check.text=""
+            finished=false;
+            downloading=false;
+            uninstalling=false;
+            infobanner.iconSource= "ui/done.png"
+            infobanner.text = "Application Uninstalled"
+        }
+        onDone: {
+            downloading = false
+            dlhelper.incrDownCount(1,uid);
+            if(!insMethod==1){
+                core.killApp(uid)
+                dlhelper.installDownload(sis);
+                installing=true
+                finished=false
+            } else {
+                finished = true
+            }
+        }
+        onCountNumberReceived: {
+            var n = dlhelper.downCountl();
+            if(n==-1) {
+                downCount.text="Downloaded 0 times"
+
+            } else {
+                downCount.text = "Downloaded " + n + " times"
+            }
+
+            console.log("received")
+        }
+
     }
 }

@@ -8,6 +8,8 @@
 #include <fim.h>
 
 #include <download.h>
+
+#include <counter.h>
 class QtDownload : public QObject {
     Q_OBJECT
 public:
@@ -26,19 +28,26 @@ public:
     Q_INVOKABLE float getProgress();
     Q_INVOKABLE void doUninstall(const QString &uidStr);
     Q_INVOKABLE TInt Uninstall(TInt aUid);
+    Q_INVOKABLE void incrDownCount(int operation,const QString& yud);
+    Q_INVOKABLE QString downCountl();
 private:
     QString target;
     QString pan;
     QString flNa;
     Download* downll;
+    QNetworkReply *repl;
+    QString cotter;
+    Counter* countSa;
+
 signals:
     Q_INVOKABLE void done();
     Q_INVOKABLE void finishUninstall();
     Q_INVOKABLE void donefile();
+    Q_INVOKABLE void countNumberReceived();
     Q_INVOKABLE void tam();//info banner
     Q_INVOKABLE void cancelled();//cancel download
 private slots:
-
+    void dowCountFin(const QString& cevv);
 public slots:
     Q_INVOKABLE  void download();
     void ok();
@@ -47,6 +56,7 @@ public slots:
     void empty();
     void downComp();
     void uninstallFinished();
+
 };
 
 #endif //QTDOWNLOAD_H

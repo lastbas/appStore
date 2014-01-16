@@ -5,6 +5,7 @@ import QtWebKit 1.0
 Item {
     height:webView.height
     anchors { right:parent.right; left: parent.left; top:parent.top }
+    width: parent.width
         BusyIndicator {
             anchors { horizontalCenter: parent.horizontalCenter; top: parent.top; topMargin: 30 }
             running: (webView.progress<1) ? true : false
@@ -15,6 +16,7 @@ Item {
         WebView {
             id:webView
             width:parent.width
+            preferredWidth: parent.width
             anchors { right: parent.right; left: parent.left; top: parent.top }
             contentsScale: 1
             visible: (progress==1) ? true : false
@@ -22,9 +24,8 @@ Item {
             settings.pluginsEnabled: true
             settings.javascriptEnabled: true
             settings.javaEnabled: true
-            pressGrabTime: 800;
-
-
+            pressGrabTime: 1000;
+            renderingEnabled: webViewRendering
             settings.javascriptCanAccessClipboard: true
             settings.offlineStorageDatabaseEnabled: true
             settings.offlineWebApplicationCacheEnabled: true
@@ -36,9 +37,7 @@ Item {
             onHeightChanged: {
                 Loader.height = height
             }
-
             onUrlChanged: {
-
                 if(url==loginSuccessUrl) {
                     url=""
                     userLoggedonDisqus=true

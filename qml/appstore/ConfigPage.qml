@@ -22,6 +22,13 @@ Page {
 
                        }
         }
+        ToolButton {
+            flat: true
+            iconSource: "ui/about.svg"
+            onClicked: {
+                window.pageStack.push(Qt.createComponent("AboutPage.qml"))
+            }
+        }
     }
     Column {
         id:column

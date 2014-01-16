@@ -231,6 +231,7 @@ Page {
             onClicked: {
                 sharedToolBar.setTools(toolBarLayout);
                 windowP.pageStack.push(Qt.createComponent("DetailsView.qml"));
+//                dlhelper.incrDownCount();
             }
             Row {
                 id: topLayout
@@ -369,6 +370,9 @@ Page {
              switch (status) {
              case XmlListModel.Error:  xmlErrorF();
              case XmlListModel.Ready:  xmlLoaded=(xmlError) ? false: true
+             }
+             if(xmlLoaded) {
+                 version.get()
              }
         }
     }

@@ -17,7 +17,7 @@ core::core(QObject *parent) :
 }*/
 
 void core::installUpdate() {
-    QString link = "C:/private/0xE6002CD5/update.sis";
+    QString link = "file:///C:/private/e6002cd5/update.sis";
     QDesktopServices::openUrl(QUrl(link));
 }
 

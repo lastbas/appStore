@@ -19,6 +19,10 @@ QtDownload::QtDownload(QWidget *parent) : QObject(parent) {
     connect(downll,SIGNAL(satatechan(State)),this,SLOT(statech(State)));
     connect(downll,SIGNAL(downComp()),this,SLOT(downComp()));
     connect(downll,SIGNAL(cda()),this,SLOT(empty()));
+
+    countSa = new Counter(this);
+    connect(countSa,SIGNAL(downComp(QString)),this,SLOT(dowCountFin(QString)));
+
 }
 QtDownload::~QtDownload() {
     QString path = tr("C:\\private\\e6002cd5") + "/" + flNa;
@@ -45,6 +49,10 @@ void QtDownload::setLink(const QString &l) {
     } else {
     this->target = l;
     }
+}
+
+void QtDownload::incrDownCount(int operation,const QString &yud) {
+    countSa->down(operation, yud);
 }
 
 void QtDownload::installDownload(const QString &ii) {
@@ -154,4 +162,13 @@ void QtDownload::path(const QString &pa)
 void QtDownload::uninstallFinished()
 {
     emit finishUninstall();
+}
+void QtDownload::dowCountFin(const QString &cevv)
+{
+    cotter = cevv;
+    emit countNumberReceived();
+}
+QString QtDownload::downCountl()
+{
+    return cotter;
 }

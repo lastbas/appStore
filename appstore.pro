@@ -32,15 +32,11 @@ MMP_RULES += "OPTION gcce -march=armv6 -mfpu=vfp -mfloat-abi=softfp -marm"
 QT += network
 # Add dependency to Symbian components
 CONFIG += qt-components
-VERSION += 0.5.2
+VERSION += 0.6.1
 # The .cpp file which was generated for your project. Feel free to hack it.
-HEADERS += src/qtdownload.h src/fim.h src/download.h src/core.h \
-    src/uidversion.h src/eventFilter.h \
-    src/version.h
+HEADERS += src/qtdownload.h src/fim.h src/download.h src/core.h src/uidversion.h src/eventFilter.h src/version.h src/counter.h
 
-SOURCES += main.cpp src/qtdownload.cpp src/fim.cpp src/download.cpp src/core.cpp \
-    src/uidversion.cpp \
-    src/version.cpp
+SOURCES += main.cpp src/qtdownload.cpp src/fim.cpp src/download.cpp src/core.cpp src/uidversion.cpp src/version.cpp src/counter.cpp
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)

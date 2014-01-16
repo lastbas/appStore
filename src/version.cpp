@@ -16,25 +16,20 @@ version::~version() {
 
 
 void version::check(QNetworkReply *data) {
-    QFile localFile("version.txt");
-    if (!localFile.open(QIODevice::WriteOnly))
-        return;
-
     const QByteArray sdata = data->readAll();
     qDebug()<<sdata;
-    localFile.write(sdata);
-    qDebug() << sdata;
-    localFile.close();
     AppUid u;
-    if(u.uidTo("0xE6002CD5") == sdata) {
-        qDebug()<<u.uidTo("0xE6002CD5");
-        qDebug("no update");
+    if(data) {
+        if(u.uidTo("0xE6002CD5") == sdata) {
+            qDebug()<<u.uidTo("0xE6002CD5");
+            qDebug("no update");
 
 
-    } else {
-        qDebug()<<u.uidTo("0xE6002CD5");
-        qDebug("update avaiable");
-        emit upAvaiable();
+        } else {
+            qDebug()<<u.uidTo("0xE6002CD5");
+            qDebug("update avaiable");
+            emit upAvaiable();
+        }
     }
 }
 
